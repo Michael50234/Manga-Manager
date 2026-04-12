@@ -13,10 +13,69 @@ datasource db {
 }
 
 model User {
-  id String @id @default(cuid())
-  email String 
-  username String 
-  password String
-  nickname String
-  bio String?
+  id       String  @id @default(cuid())
+  email    String  @unique
+  username String  @unique
+  // Stores hashed password
+  password String  
+  nickname String  @default("Anonymous User")
+  bio      String?
+
+  favouritedManga Manga[]
+  userMangaPreferences UserMangaPreference[]
+
+  // To login we will search for user with username and match hashed passwords
+  @@index([username])
+}
+
+model Manga {
+  id     String @id @default(cuid())
+  title   String
+  author String
+  lastReleasedChapter Int
+  
+  favouritedBy User[]
+  userMangaPreferences UserMangaPreference[]
+}
+
+enum DayOfWeek {
+  Monday
+  Tuesday
+  Wednesday
+  Thursday
+  Friday
+  Saturday
+  Sunday
+}
+
+enum MangaTierListRank {
+  GodTier
+  S
+  A
+  B 
+  C 
+  D 
+  F 
+  Dropped
+  Unranked
+}
+
+model UserMangaPreference {
+  id      String @id @default(cuid())
+  // The User can add the link where they access the manga here
+  mangaAccessLink String? 
+  // User's can specify whether they want to be notified on the day a new chapter releases
+  sendNotifications Boolean @default(false)
+  // This only works for manhwa's since manhwa's usually release weekly on a consistent schedule
+  // We allow the user to specify the release date because different platforms may release on different days
+  mangaReleaseDay DayOfWeek?
+  tierListRank MangaTierListRank @default(Unranked)
+
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String
+  manga   Manga  @relation(fields: [mangaId], references: [id])
+  mangaId String
+
+  // Each user can have only one preference setting for a particular manga
+  @@unique([userId, mangaId])
 }
