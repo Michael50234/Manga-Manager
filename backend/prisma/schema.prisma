@@ -20,6 +20,8 @@ model User {
   password String  
   nickname String  @default("Anonymous User")
   bio      String?
+  lastUpdatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 
   favouritedManga Manga[]
   userMangaPreferences UserMangaPreference[]
@@ -33,7 +35,8 @@ model Manga {
   title   String
   author String
   lastReleasedChapter Int
-  
+  lastUpdatedAt DateTime @updatedAt
+
   favouritedBy User[]
   userMangaPreferences UserMangaPreference[]
 }
@@ -70,6 +73,8 @@ model UserMangaPreference {
   // We allow the user to specify the release date because different platforms may release on different days
   mangaReleaseDay DayOfWeek?
   tierListRank MangaTierListRank @default(Unranked)
+  lastUpdatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 
   user    User   @relation(fields: [userId], references: [id])
   userId  String
