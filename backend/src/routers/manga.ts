@@ -1,6 +1,6 @@
 import express from "express";
 
-const mangaRouter = express.Router();
+export const mangaRouter = express.Router();
 
 
 // Allows users to access their preferences for a specific manga
@@ -17,7 +17,7 @@ mangaRouter.route("/:id/user-manga-preference")
     })
 
 
-    
+
 // Returns the details of a specific manhwa
 // The id is the id of the manhwa
 mangaRouter.get("/:id", (req, rest) => {

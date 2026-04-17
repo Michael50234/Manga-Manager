@@ -2,10 +2,10 @@ import express from "express";
 import bcrypt from 'bcrypt';
 import { prisma } from '~/prisma';
 import { createJWTToken } from "~/utils";
-import { create } from "node:domain";
+import { JWTMiddleware } from "~/middleware/authentication";
+import { UserUpdateArgs } from "generated/prisma/models";
 
-
-const accountsRouter = express.Router();
+export const accountsRouter = express.Router();
 
 accountsRouter.post("/login", async (req, res) => {
     const username = req.body.username;
@@ -55,6 +55,8 @@ accountsRouter.post("/sign-up", async (req, res) => {
     const user = await prisma.user.create({
         data: {
             username,
+            // By default the nickname will be the users username
+            nickname: username,
             password: hashedPassword,
             email, 
         }
@@ -66,6 +68,23 @@ accountsRouter.post("/sign-up", async (req, res) => {
 });
 
 // UserId will be set through JWTMiddleware so we dont need it as a route parameter
-accountsRouter.patch("/update", (req, res) => {
+// This route lets users change their nickname, bio, and email
+accountsRouter.patch("/update", JWTMiddleware, (req, res) => {
+    
 
+    const user = req.user;
+
+    const data = {}
+
+    if(req.body.nickname) {
+        data.nickanme = req.body.nickname;
+    }
+
+    if(req.body.bio) {
+        data.bio = req.body.bio;
+    }
+
+    if(req.body.email) {
+        data.email = req.body.email;
+    }
 });
