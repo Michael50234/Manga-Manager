@@ -13,7 +13,7 @@ datasource db {
 }
 
 model User {
-  id       String  @id @default(cuid())
+  id       String  @id @default(uuid())
   email    String  @unique
   username String  @unique
   // Stores hashed password
@@ -31,7 +31,7 @@ model User {
 }
 
 model Manga {
-  id     String @id @default(cuid())
+  id     String @id @default(uuid())
   title   String
   author String
   lastReleasedChapter Int
@@ -64,7 +64,7 @@ enum MangaTierListRank {
 }
 
 model UserMangaPreference {
-  id      String @id @default(cuid())
+  id      String @id @default(uuid())
   // The User can add the link where they access the manga here
   mangaAccessLink String? 
   // User's can specify whether they want to be notified on the day a new chapter releases

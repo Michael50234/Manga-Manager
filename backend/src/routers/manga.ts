@@ -2,7 +2,7 @@ import express from "express";
 import { UserMangaPreferenceUpdateArgs } from "generated/prisma/models";
 import { JWTMiddleware } from "~/middleware/authentication";
 import { prisma } from "~/prisma";
-import { editUserMangaPreferenceSchema } from "~/validators/manga";
+import { editUserMangaPreferenceSchema, getManhwaListSchema } from "~/validators/manga";
 
 export const mangaRouter = express.Router();
 
@@ -18,20 +18,65 @@ mangaRouter.route("/favourites")
     
     })
 
-// Gets the data for the user's personal tierlist
-mangaRouter.get("/tier-list", (req, res) => {
-    
-})
-
-// Returns a list of manga from MangaDex
-mangaRouter.get("/", (req, res) => {
+// Returns a paginated list of manga from MangaDex
+mangaRouter.get("/", async (req, res) => {
     // The query parameters include: page, limit, searchText, and a list of tags
-    const queryParams = req.query
+    // Validate the request body
+    const parsed = getManhwaListSchema.safeParse(req.query)
 
+    if(!parsed.success) {
+        res.status(400).json({
+            detail: `Response body is not valid ${parsed.error.message}`
+        });
+        return;
+    }
+
+    const queryParams = parsed.data;
+
+    const page = queryParams.page;
+    const limit = queryParams.limit;
+    const searchText = queryParams.searchText;
+    const tags = queryParams.tags;
+
+    // Create URLSearchParams object and add default search params
+    const searchParams = new URLSearchParams([
+        ["includes", "manga"],
+        ["includes", "author"], 
+        ["includes", "tag"]
+    ])
+
+    // Add pagination params
+    searchParams.set("limit", `${limit}`);
+    searchParams.set("offset", `${page * limit}`);
+
+    // Add optional filter params
+    if(searchText) {
+        searchParams.set("title", searchText);
+    }
+
+    tags?.forEach((tag) => {
+        searchParams.append("includedTags", tag);
+    })
+
+    // Fetch manga from MangaDex
+    const response = await fetch(`https://api.mangadex.org/manga?${searchParams.toString()}`)
+
+    if(!response.ok) {
+        res.status(404).json({
+            detatil: "Failed to fetch manga from MangaDex"
+        })
+        return;
+    }
+
+    // TODO: Maybe shape the response
+    const paginatedManga = await response.json()
+
+    res.status(200).json(paginatedManga)
 })
 
-// Get manga
+// Returns a list of all MangaDex tags
 mangaRouter.get("/tag-list", async (req, res) => {
+    // Fetch tag list from MangaDex
     const response = await fetch("https://api.mangadex.org/manga/tag")
 
     if(!response.ok) {
@@ -48,7 +93,7 @@ mangaRouter.get("/tag-list", async (req, res) => {
 
 
 // Allows users to access their preferences for a specific manga
-// The id is the id of the manhwa
+// The id is the id of the manga
 mangaRouter.route("/:id/user-manga-preference")
     .get(async (req, res) => {
         const mangaId = req.params.id
