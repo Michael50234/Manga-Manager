@@ -7,6 +7,12 @@ const app = express();
 
 app.use(express.json());
 
+app.get("/", (req, res) => {
+    res.json({
+        detail: "Hello, is this working"
+    });
+})
+
 app.use("/accounts", accountsRouter);
 
 app.use("/manga", mangaRouter);

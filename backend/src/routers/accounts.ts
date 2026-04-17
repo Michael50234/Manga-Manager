@@ -4,13 +4,23 @@ import { prisma } from '~/prisma';
 import { createJWTToken } from "~/utils";
 import { JWTMiddleware } from "~/middleware/authentication";
 import { UserUpdateArgs } from "generated/prisma/models";
-import { updateSchema } from "~/validators/accounts";
+import { loginSchema, signUpSchema, updateUserSchema } from "~/validators/accounts";
 
 export const accountsRouter = express.Router();
 
 accountsRouter.post("/login", async (req, res) => {
-    const username = req.body.username;
-    const password = req.body.password;
+    // Validate request body
+    const parsed = loginSchema.safeParse(req.body);
+
+    if(!parsed.success) {
+        res.status(400).json({
+            detail: `Request body not valid: ${parsed.error.message}`
+        });
+        return;
+    }
+
+    const username = parsed.data.username;
+    const password = parsed.data.password;
 
     // Get the user with the username
     const user = await prisma.user.findUnique({
@@ -45,14 +55,23 @@ accountsRouter.post("/login", async (req, res) => {
 });
 
 accountsRouter.post("/sign-up", async (req, res) => {
-    const username = req.body.username;
-    const password = req.body.password;
-    const email = req.body.email;
+    // Validate request body
+    const parsed = signUpSchema.safeParse(req.body);
+    
+    if(!parsed.success) {
+        res.status(400).json({
+            detail: `Request body is not valid: ${parsed.error.message}`
+        })
+        return;
+    }
+
+    const username = parsed.data.username;
+    const password = parsed.data.password;
+    const email = parsed.data.email;
 
     // Hash the password 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);;
 
-    // Create the user in the database
     const user = await prisma.user.create({
         data: {
             username,
@@ -65,14 +84,17 @@ accountsRouter.post("/sign-up", async (req, res) => {
 
     // Create and return a JWT token
     const token = createJWTToken(user.id);
-    return token;
+    res.status(200).json({
+        accessToken: token,
+    })
+
 });
 
 // UserId will be set through JWTMiddleware so we dont need it as a route parameter
 // This route lets users change their nickname, bio, and email
 accountsRouter.patch("/update", JWTMiddleware, async (req, res) => {
     // Validate the request body using a zod schema
-    const validated = updateSchema.safeParse(req.body);
+    const validated = updateUserSchema.safeParse(req.body);
     
     if(!validated.success) {
         res.status(400).json({
@@ -107,8 +129,8 @@ accountsRouter.patch("/update", JWTMiddleware, async (req, res) => {
         data,
     });
 
-    return res.status(200).json({
+    res.status(200).json({
         detail: "Successfully saved changes to user"
-    })
+    });
 
 });
