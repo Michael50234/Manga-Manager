@@ -18,19 +18,20 @@ mangaRouter.route("/favourites")
     
     })
 
-// Gets the data for the users personal tierlist
+// Gets the data for the user's personal tierlist
 mangaRouter.get("/tier-list", (req, res) => {
     
 })
 
-// Returns manga from MangaDex
+// Returns a list of manga from MangaDex
 mangaRouter.get("/", (req, res) => {
+    // The query parameters include: page, limit, searchText, and a list of tags
+    const queryParams = req.query
 
 })
 
 // Get manga
 mangaRouter.get("/tag-list", async (req, res) => {
-    console.log("Hello")
     const response = await fetch("https://api.mangadex.org/manga/tag")
 
     if(!response.ok) {
@@ -42,8 +43,7 @@ mangaRouter.get("/tag-list", async (req, res) => {
 
     const tags = await response.json();
 
-    res.status(200).json(tags)
-
+    res.status(200).json(tags);
 })
 
 
@@ -101,8 +101,19 @@ mangaRouter.route("/:id/user-manga-preference")
     
     })
 
-// Returns the details of a specific manhwa
-// The id is the id of the manhwa
+// Returns a list of the users manga preference settings
+mangaRouter.get("/user-manga-preferences", (req, res) => {
+
+})
+
+// Returns a list of recomended manga based on a manga
+mangaRouter.get("/:id/recomended", () => {
+
+})
+
+// Returns the details of a specific manga
+// The id is the id of the manga
 mangaRouter.get("/:id", (req, res) => {
     
 });
+
