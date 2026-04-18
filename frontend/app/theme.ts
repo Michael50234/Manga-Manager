@@ -3,22 +3,42 @@ import { createTheme } from '@mui/material/styles';
 export const theme = createTheme({
     palette: {
         primary: {
-            main: HSL(232, 61, 72),
+            main: 'hsl(232, 61, 72)',
             // Hover color
-            dark: HSL(232, 61, 60)
+            dark: 'hsl(232, 61, 60)'
         },
         secondary: {
-            main: HSL(52, 61, 72);
+            main: 'hsl(52, 61, 72)',
             // Hover color
-            dark: HSL(52, 61, 60);
-        }
+            dark: 'hsl(52, 61, 60)',
+        },
         background: {
-            default: HSL(240, 18, 98),
-            paper: HSL(240, 18, 94),
-        }
+            default: 'hsl(240, 18, 98)',
+            paper: 'hsl(240, 18, 94)',
+        },
         text: {
-            primary:
-            secondary: 
+            primary: 'hsl(0, 0, 9)',
+            secondary: 'hsl(0, 0, 25)',
         }
+    },
+    typography: {
+        fontSize: 16,
+        fontFamily: 'var(--font-poppins), sans-serif'
+    }, 
+    components: {
+        // MuiButton: {
+        //     defaultProps: {
+
+        //     }, 
+        //     styleOverrides: {
+        //         containedPrimary: {
+
+        //         }
+                
+        //     }
+        // }
+
     }
+
+
 })

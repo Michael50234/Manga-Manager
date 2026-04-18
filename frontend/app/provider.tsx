@@ -1,16 +1,13 @@
 'use client'
-import theme from '@/theme'
 
-
-import { AppRouterCacheProvider } from '@mui/material-nextjs/v13-appRouter'
-import React from 'react'
+import { Box, CssBaseline, ThemeProvider } from "@mui/material"
+import { theme } from "./theme"
 
 const Provider = ({ children }: { children: React.ReactNode }) => {
   return (
     <ThemeProvider theme={theme}>
-        <AppRouterCacheProvider>
-            {children}
-        </AppRouterCacheProvider>
+      <CssBaseline />
+      { children }
     </ThemeProvider>
   )
 }
