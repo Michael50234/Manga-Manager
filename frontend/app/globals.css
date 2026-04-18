@@ -1,0 +1,22 @@
+:root {
+  --bg-light: HSL(240, 18, 90);
+  --bg: HSL(240, 18, 94);
+  --bg-dark: HSL(240, 18, 98);
+
+  --border: HSL(235, 18, 40);
+  --border-dark: HSL(235, 18, 55);
+  --border-light: HSL(235, 18, 70);
+
+  --highlight: HSL(0, 0, 98);
+
+  --primary: HSL(232, 61, 72);
+  --primary-hover: HSL(232, 61, 60);
+
+  --secondary: HSL(52, 61, 72);
+  --secondary-hover: HSL(52, 61, 60);
+
+  --text: HSL(0, 0, 95);
+  --text-muted: HSL(0, 0, 76);
+
+  --muted-surface: HSL(240, 3, 89);
+}
