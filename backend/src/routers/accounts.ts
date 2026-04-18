@@ -1,3 +1,4 @@
+import "../../config/env";
 import express from "express";
 import bcrypt from 'bcrypt';
 import { prisma } from '~/prisma';
@@ -5,6 +6,8 @@ import { createJWTToken } from "~/utils";
 import { JWTMiddleware } from "~/middleware/authentication";
 import { UserUpdateArgs } from "generated/prisma/models";
 import { loginSchema, signUpSchema, updateUserSchema } from "~/validators/accounts";
+
+const isProd = process.env.NODE_ENV === "production";
 
 export const accountsRouter = express.Router();
 
@@ -49,8 +52,17 @@ accountsRouter.post("/login", async (req, res) => {
     // Create the JWT token and return it
     const token = createJWTToken(user.id);
 
-    res.status(200).json({
-        accessToken: token,
+    res.status(200).cookie("token", token, {
+        // This makes it so that the client cannot read your cookie through the DOM (document object)
+        httpOnly: true, 
+        // On production set this to none, making it so that the cookie is sent on cross site requests
+        sameSite: isProd ? "none" : "lax", 
+        // This is used to control whether the cookie is sent by the client on requests to http sites or not
+        secure: isProd,
+        // This is used to set the expiry time of the token
+        maxAge: 1000 * 60 * 60,
+    }).json({
+        detail: "Successfully logged in"
     });
 });
 
@@ -72,6 +84,19 @@ accountsRouter.post("/sign-up", async (req, res) => {
     // Hash the password 
     const hashedPassword = await bcrypt.hash(password, 10);;
 
+    const existingUser = await prisma.user.findUnique({
+        where: {
+            username: username
+        }
+    })
+
+    if(existingUser) {
+        res.status(400).json({
+            detail: "A user with this username already exists"
+        });
+        return;
+    }
+
     const user = await prisma.user.create({
         data: {
             username,
@@ -84,9 +109,19 @@ accountsRouter.post("/sign-up", async (req, res) => {
 
     // Create and return a JWT token
     const token = createJWTToken(user.id);
-    res.status(200).json({
-        accessToken: token,
-    })
+
+    res.status(200).cookie("token", token, {
+        // This makes it so that the client cannot read your cookie through the DOM (document object)
+        httpOnly: true, 
+        // On production set this to none, making it so that the cookie is sent on cross site requests
+        sameSite: isProd ? "none" : "lax", 
+        // This is used to control whether the cookie is sent by the client on requests to http sites or not
+        secure: isProd,
+        // This is used to set the expiry time of the token
+        maxAge: 1000 * 60 * 60,
+    }).json({
+        detail: "Successfully signed in"
+    });
 
 });
 

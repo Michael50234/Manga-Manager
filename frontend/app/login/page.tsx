@@ -19,7 +19,7 @@ export default function Home() {
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
 
-  const validateUsername = (username: string) => {
+  const validateUsername = () => {
     if (username.trim().length < 1) {
       setUsernameError("Username cannot be empty");
     } else {
@@ -27,13 +27,24 @@ export default function Home() {
     }
   };
 
-  const validatePassword = (password: string) => {
+  const validatePassword = () => {
     if (password.length < 6) {
       setPasswordError("Password must have a minimum length of 6");
     } else {
       setPasswordError("");
     }
   };
+
+  const login = async () => {
+    validateUsername();
+    validatePassword();
+
+    if(usernameError || passwordError) {
+        return;
+        
+    }
+
+  }
 
   return (
     <Box
@@ -72,8 +83,7 @@ export default function Home() {
             error={!!usernameError}
             helperText={!!usernameError ? usernameError : ""}
             onChange={(e) => {
-              setUsername(e.target.value);
-              validateUsername(e.target.value);
+              setUsername(e.target.value)
             }}
             sx={{
               "& .MuiFormHelperText-root": {
@@ -89,7 +99,6 @@ export default function Home() {
             helperText={!!passwordError ? passwordError : ""}
             onChange={(e) => {
                 setPassword(e.target.value);
-                validatePassword(e.target.value);
             }}
             sx={{
               "& .MuiFormHelperText-root": {

@@ -7,23 +7,14 @@ import { NextFunction, Request, Response } from "express";
 // Validates JWT token and returns the user with the userId in the payload
 export async function JWTMiddleware(req: Request, res: Response, next: NextFunction) {
     // Get the jwt token from the auth header
-    const authHeader = req.headers.authorization;
+    const accessToken = req.cookies.token;
 
-    if(!authHeader) {
+    if(!accessToken) {
         res.status(401).json({
-            detail: "The request object is missing a JWT token"
+            detail: "The JWT token was not sent with the request"
         });
         return;
     } 
-
-    const [scheme, accessToken] = authHeader.split(" ")
-
-    if(scheme !== "Bearer" || !accessToken) {
-        res.status(401).json({
-            detail: "Authorization header is not valid"
-        })
-        return;
-    }
 
     let payload: JWTPayload;
 
@@ -50,6 +41,8 @@ export async function JWTMiddleware(req: Request, res: Response, next: NextFunct
         });
         return;
     }
+
+    // Take out after test
     console.log("User Authenticated")
 
     req.user = user

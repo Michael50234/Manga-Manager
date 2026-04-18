@@ -3,11 +3,18 @@ import express from 'express';
 import { accountsRouter } from "./routers/accounts";
 import { mangaRouter } from "./routers/manga";
 import cors from 'cors'
+import cookieParser from "cookie-parser";
 
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+
+app.use(cookieParser())
+
+app.use(cors({
+    origin: process.env.FRONTEND_URL, 
+    credentials: true
+}));
 
 app.get("/", (req, res) => {
     res.json({
