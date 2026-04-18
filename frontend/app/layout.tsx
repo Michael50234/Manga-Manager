@@ -32,13 +32,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-        <body className={poppins.variable}>
-          <AppRouterCacheProvider>
-            <Provider>
-              {children}
-            </Provider>
-          </AppRouterCacheProvider>
-        </body>
+      <body className={poppins.variable}>
+        <AppRouterCacheProvider>
+          <Provider>{children}</Provider>
+        </AppRouterCacheProvider>
+      </body>
     </html>
   );
 }

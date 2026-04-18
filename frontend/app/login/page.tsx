@@ -12,10 +12,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Home() {
-  const router = useRouter();
+    const router = useRouter();
 
-  const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState("");
   const [password, setPassword] = useState("");
@@ -26,16 +24,6 @@ export default function Home() {
       setUsernameError("Username cannot be empty");
     } else {
       setUsernameError("");
-    }
-  };
-
-  const validateEmail = (email: string) => {
-    const emailRegex = /@.+\.com/;
-
-    if (!emailRegex.test(email)) {
-      setEmailError("Please enter a valid email");
-    } else {
-      setEmailError("");
     }
   };
 
@@ -75,25 +63,9 @@ export default function Home() {
             fontWeight: "600",
           }}
         >
-          Sign Up
+          Login
         </Typography>
         <Stack spacing={2}>
-          <TextField
-            label="Email"
-            error={!!emailError}
-            helperText={!!emailError ? emailError : ""}
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              validateEmail(e.target.value);
-            }}
-            sx={{
-              "& .MuiFormHelperText-root": {
-                mx: "0px",
-                my: "2px",
-              },
-            }}
-          />
           <TextField
             label="Username"
             value={username}
@@ -110,14 +82,14 @@ export default function Home() {
               },
             }}
           />
-          <TextField
+        <TextField
             label="Password"
             value={password}
             error={!!passwordError}
             helperText={!!passwordError ? passwordError : ""}
             onChange={(e) => {
-              setPassword(e.target.value);
-              validatePassword(e.target.value);
+                setPassword(e.target.value);
+                validatePassword(e.target.value);
             }}
             sx={{
               "& .MuiFormHelperText-root": {
@@ -125,28 +97,28 @@ export default function Home() {
                 my: "2px",
               },
             }}
-          />
-          <Stack spacing={1} alignItems="center">
-            <Button fullWidth variant="contained" color="primary">
-              Submit
-            </Button>
-            <Typography
-              onClick={() => {
-                router.push("/login");
-              }}
-              sx={{
-                fontSize: "0.9rem",
-                color: "var(--text-muted)",
-                transition: "border 0.1s ease-in-out",
-                borderBottom: "1px solid transparent",
-                "&:hover": {
-                  borderBottom: "1px solid var(--border-dark)",
-                },
-              }}
-            >
-              Already Have An Account. Log In Instead.
-            </Typography>
-          </Stack>
+        />
+        </Stack>
+        <Stack spacing={1} alignItems="center">
+          <Button fullWidth variant="contained" color="primary">
+            Submit
+          </Button>
+          <Typography
+            onClick={() => {
+                router.push("/")
+            }}
+            sx={{
+              fontSize: "0.9rem",
+              color: "var(--text-muted)",
+              transition: "border 0.1s ease-in-out",
+              borderBottom: "1px solid transparent",
+              "&:hover": {
+                borderBottom: "1px solid var(--border-dark)",
+              },
+            }}
+          >
+            Dont Have An Account. Sign Up Instead.
+          </Typography>
         </Stack>
       </Stack>
     </Box>
