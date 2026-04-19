@@ -30,17 +30,30 @@ model User {
   @@index([username])
 }
 
+enum ReleaseStatus {
+  Completed
+  Ongoing
+}
+
 model Manga {
   id     String @id @default(uuid())
   title   String
   author String
+  description String
+
+  releaseStatus ReleaseStatus
   lastReleasedChapter Int
+  lastReleasedVolume Int
+  lastSeriesUpdateDate DateTime
+
+  // This is the last time the series record in database was updated
   lastUpdatedAt DateTime @updatedAt
 
   favouritedBy User[]
   userMangaPreferences UserMangaPreference[]
 }
 
+// On the frontend also allow a none option
 enum DayOfWeek {
   Monday
   Tuesday
