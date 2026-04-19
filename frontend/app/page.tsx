@@ -47,6 +47,10 @@ export default function Home() {
     }
   };
 
+  const signUp = () => {
+    
+  }
+
   return (
     <Box
       sx={{

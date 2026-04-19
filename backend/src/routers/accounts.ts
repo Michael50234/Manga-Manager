@@ -169,3 +169,17 @@ accountsRouter.patch("/update", JWTMiddleware, async (req, res) => {
     });
 
 });
+
+// This route gets the user record for the client
+accountsRouter.get("/", JWTMiddleware, (req, res) => {
+    const user = req.user!;
+
+    res.status(200).json({
+        id: user.id,
+        bio: user.bio,
+        email: user.email,
+        nickname: user.nickname,
+        createdAt: user.createdAt,
+        updatedAt: user.lastUpdatedAt
+    })
+})

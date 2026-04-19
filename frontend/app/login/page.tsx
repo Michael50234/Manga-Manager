@@ -39,9 +39,23 @@ export default function Home() {
     validateUsername();
     validatePassword();
 
+    // If there is a input validation, error cancel the login
     if(usernameError || passwordError) {
         return;
-        
+    }
+
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        username,
+        password
+      })
+    })
+
+    if(!response.ok) {
     }
 
   }

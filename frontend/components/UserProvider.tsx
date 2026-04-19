@@ -1,18 +1,23 @@
+import { User } from '../types'
 import React, { useContext, createContext } from 'react'
 
 type UserContext = {
     user: User,
     loadUser: () => void,
     setUser: React.Dispatch<React.SetStateAction<User>>
-}
+};
 
-const userContext = createContext<>(null)
+const UserContext = createContext<UserContext | null>(null);
 
-const UserProvider = () => {
+const UserProvider = ({ children }: {children: React.ReactNode}) => {
+  const loadUser = () => {
+
+  }
+
   return (
-    <div>
-      
-    </div>
+    <>
+    {children}
+    </>
   )
 }
 
