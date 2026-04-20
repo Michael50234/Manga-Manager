@@ -180,6 +180,6 @@ accountsRouter.get("/", JWTMiddleware, (req, res) => {
         email: user.email,
         nickname: user.nickname,
         createdAt: user.createdAt,
-        updatedAt: user.lastUpdatedAt
-    })
+        lastUpdatedAt: user.lastUpdatedAt
+    });
 })
