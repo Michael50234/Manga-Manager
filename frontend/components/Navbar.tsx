@@ -46,7 +46,7 @@ export const Navbar = () => {
         <AppBar position="fixed">
             <Toolbar variant="dense" sx={{
                 backgroundColor: "var(--bg)",
-                py: "4px"
+                py: "0px"
             }}>
                 <Stack direction="row" sx={{
                     width: "100%"
@@ -59,46 +59,74 @@ export const Navbar = () => {
                                 }}></Box>
                             </Avatar>
                         </IconButton>
-                        <Button variant={ pathName === "/manga" ? "contained" : "text"} sx={{
-                            color: "black",
-                            fontWeight: "500",
-                            height: "40px",
-                            px: "8px",
-                            py: "3px",
-                            "&.MuiButton-contained": {
-                                backgroundColor: "var(--bg-light)"
-                            }
-                        }}>
+                        <Typography 
+                            data-active={pathName === "/manga" ? "" : undefined}
+                            sx={{
+                                transition: "background 0.1s ease-in-out",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                textAlign: "center",
+                                color: "black",
+                                fontWeight: "500",
+                                height: "100%",
+                                display: "flex",
+                                px: "2px",
+                                backgroundColor: pathName === "/manga" ? "var(--primary)" : "transparent",
+                                boxShadow: pathName === "/manga" ? "inset 0 -3px 0 rgba(0,0,0,0.25)" : undefined,
+                                "&:hover:not([data-active=''])" : {
+                                    boxShadow: "inset 0 -3px 0 var(--primary-hover)"
+                                },
+                            }}
+                        >
                             <Link href="/manga">Dashboard</Link>
-                        </Button>
-                        <Button variant={ pathName === "/manga/favourites" ? "contained" : "text"} sx={{
-                            color: "black",
-                            fontWeight: "500",
-                            height: "40px",
-                            px: "8px",
-                            py: "3px",
-                            "&.MuiButton-contained": {
-                                backgroundColor: "var(--bg-light)"
-                            }
-                        }}>
+                        </Typography>
+                        <Typography
+                            data-active={pathName === "/manga/favourites" ? "" : undefined}
+                            sx={{
+                                transition: "background 0.1s ease-in-out",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                textAlign: "center",
+                                color: "black",
+                                fontWeight: "500",
+                                height: "100%",
+                                display: "flex",
+                                px: "2px",
+                                backgroundColor: pathName === "/manga/favourites" ? "var(--primary)" : "transparent",
+                                boxShadow: pathName === "/manga/favourites" ? "inset 0 -3px 0 rgba(0,0,0,0.25)" : undefined,
+                                "&:hover:not([data-active=''])" : {
+                                    boxShadow: "inset 0 -3px 0 var(--primary-hover)"
+                                },
+                            }}
+                        >
                             <Link href="/manga/favourites">Favourited Series</Link>
-                        </Button>
-                        <Button variant={ pathName === "/manga/tier-list" ? "contained" : "text"} sx={{
-                            color: "black",
-                            fontWeight: "500",
-                            height: "40px",
-                            px: "8px",
-                            py: "3px",
-                            "&.MuiButton-contained": {
-                                backgroundColor: "var(--bg-light)"
-                            }
-                        }}>
+                        </Typography>
+                        <Typography
+                            data-active={pathName === "/manga/tier-list" ? "" : undefined}
+                            sx={{
+                                transition: "background 0.1s ease-in-out",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                textAlign: "center",
+                                color: "black",
+                                fontWeight: "500",
+                                height: "100%",
+                                display: "flex",
+                                px: "2px",
+                                backgroundColor: pathName === "/manga/tier-list" ? "var(--primary)" : "transparent",
+                                boxShadow: pathName === "/manga/tier-list" ? "inset 0 -3px 0 rgba(0,0,0,0.25)" : undefined,
+                                "&:hover:not([data-active=''])" : {
+                                    boxShadow: "inset 0 -3px 0 var(--primary-hover)"
+                                },
+                            }}
+                        >
                             <Link href="/manga/tier-list">Tier List</Link>
-                        </Button>
+                        </Typography>
                     </Stack>
                     <Button 
                         variant="text" 
                         sx={{
+                            textTransform: "none",
                             fontWeight: "500",
                             color: "black",
                             ml: "auto"
