@@ -3,10 +3,44 @@
 import { AppBar, Avatar, Box, Button, IconButton, Stack, Toolbar, Typography } from '@mui/material';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation'
+import { useToast } from './ToastProvider';
+import { useState } from 'react';
+import { useUser } from './UserProvider';
 
 export const Navbar = () => {
     const pathName = usePathname();
     const router = useRouter();
+
+    const { showSuccess, showError } = useToast();
+    const { setUser } = useUser();
+
+    const [logoutLoading, setLogoutLoading] = useState(false)
+
+    const logout = async () => {
+        try {
+            setLogoutLoading(true);
+            // This clears the JWT token cookie
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/logout`, {
+                method: "POST",
+                credentials: "include"
+            })
+
+            if(!response.ok) {
+                throw new Error("Failed to logout")
+            }
+
+            setUser(null);
+
+            const data = await response.json();
+
+            showSuccess(data.detail);
+            router.replace("/");
+        } catch(error) {
+            showError("Failed to logout");
+        } finally {
+            setLogoutLoading(false);
+        }
+    }
 
     return (
         <AppBar position="fixed">
@@ -62,11 +96,16 @@ export const Navbar = () => {
                             <Link href="/manga/tier-list">Tier List</Link>
                         </Button>
                     </Stack>
-                    <Button variant="text" sx={{
-                        fontWeight: "500",
-                        color: "black",
-                        ml: "auto"
-                    }}>
+                    <Button 
+                        variant="text" 
+                        sx={{
+                            fontWeight: "500",
+                            color: "black",
+                            ml: "auto"
+                        }}
+                        disabled={logoutLoading}
+                        onClick={logout}
+                    >
                         <Link href="/">Logout</Link>
                     </Button>
                 </Stack>

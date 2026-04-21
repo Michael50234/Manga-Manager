@@ -83,7 +83,9 @@ export default function Home() {
           username, 
           email,
           password,
-        })
+        }),
+        // To store cookies returned in the response, you must have credentials: "include"
+        credentials: "include"
       })
 
       if(!response.ok) {

@@ -29,7 +29,7 @@ const UserProvider = ({ children }: {children: React.ReactNode}) => {
     setUserLoading(true);
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts`, {
-      method: "POST",
+      method: "GET",
       credentials: "include",
     });
 

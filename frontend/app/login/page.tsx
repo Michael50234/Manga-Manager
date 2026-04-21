@@ -69,7 +69,8 @@ export default function Login() {
         body: JSON.stringify({
           username,
           password,
-        })
+        }),
+        credentials: "include",
       });
 
       // Handle errors

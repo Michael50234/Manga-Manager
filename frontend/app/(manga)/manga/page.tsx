@@ -1,7 +1,12 @@
+'use client';
+
+import { useUser } from '@/components/UserProvider'
 import { Box, Typography } from '@mui/material'
 import React from 'react'
 
 const page = () => {
+    const { user } = useUser();
+
   return (
     <Box
         sx={{
@@ -20,7 +25,7 @@ const page = () => {
                 px: "20px"
             }}
         >
-            <Typography>Hello</Typography>
+            <Typography>{user?.email  ?? "Hello"}</Typography>
         </Box>
     </Box>
   )
