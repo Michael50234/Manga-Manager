@@ -72,7 +72,7 @@ accountsRouter.post("/sign-up", async (req, res) => {
     
     if(!parsed.success) {
         res.status(400).json({
-            detail: `Username or password is not correct`
+            detail: `Username or password is incorrect`
         })
         return;
     }
@@ -95,7 +95,7 @@ accountsRouter.post("/sign-up", async (req, res) => {
 
     if(existingUser) {
         res.status(400).json({
-            detail: "A user with this username or email already exists"
+            detail: "This username or email has been taken"
         });
         return;
     }
@@ -127,6 +127,17 @@ accountsRouter.post("/sign-up", async (req, res) => {
     });
 
 });
+
+// This clears the JWT token cookie from the client when a user logs out
+accountsRouter.post('/logout', JWTMiddleware, (req, res) => {
+    res.status(200).clearCookie("token", {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: "lax",
+    }).json({
+        detail: "Successfully logged out"
+    })
+})
 
 // UserId will be set through JWTMiddleware so we dont need it as a route parameter
 // This route lets users change their nickname, bio, and email

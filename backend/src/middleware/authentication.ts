@@ -41,9 +41,6 @@ export async function JWTMiddleware(req: Request, res: Response, next: NextFunct
         return;
     }
 
-    // Take out after test
-    console.log("User Authenticated")
-
     req.user = user
     next();
 }
