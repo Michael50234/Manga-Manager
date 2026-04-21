@@ -6,6 +6,7 @@ import { ErrorResponse } from "@/types";
 import {
   Box,
   Button,
+  CircularProgress,
   Container,
   Stack,
   TextField,
@@ -14,15 +15,11 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-export default function Home() {
+export default function Login() {
+  const [loginLoading, setLoginLoading] = useState(false);
   const router = useRouter();
-  const {
-    showError,
-    showSuccess,
-  } = useToast();
-  const {
-    loadUser,
-  } = useUser();
+  const { showError, showSuccess } = useToast();
+  const { loadUser } = useUser();
 
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState("");
@@ -32,28 +29,35 @@ export default function Home() {
   const validateUsername = () => {
     if (username.trim().length < 1) {
       setUsernameError("Username cannot be empty");
+      return true;
     } else {
       setUsernameError("");
+      return false;
     }
   };
 
   const validatePassword = () => {
     if (password.length < 6) {
       setPasswordError("Password must have a minimum length of 6");
+      return true;
     } else {
       setPasswordError("");
+      return false;
     }
   };
 
   const login = async () => {
     try {
+      setLoginLoading(true);
       // Validate the form input
-      validateUsername();
-      validatePassword();
+      const usernameError = validateUsername();
+      const passwordError = validatePassword();
 
       // If there is a input validation error, cancel the login
       if(usernameError || passwordError) {
-          return;
+        showError("Username or password is invalid")
+        setLoginLoading(false);
+        return;
       }
 
       // Send a request to log the user in
@@ -82,12 +86,16 @@ export default function Home() {
       await loadUser();
       
       showSuccess(data.detail);
+
+      router.push("/manga")
     } catch(error) {
       if(error instanceof Error) {
         showError(error.message)
       } else {
         showError("Your password or username is incorrect")
       }
+    } finally {
+      setLoginLoading(false);
     }
   }
 
@@ -154,8 +162,8 @@ export default function Home() {
         />
         </Stack>
         <Stack spacing={1} alignItems="center">
-          <Button fullWidth variant="contained" color="primary" onClick={login}>
-            Login
+          <Button fullWidth disabled={loginLoading} variant="contained" color="primary" onClick={login} sx={{height: "50px"}}>
+            {loginLoading ? <CircularProgress /> : "Login"}
           </Button>
           <Typography
             onClick={() => {

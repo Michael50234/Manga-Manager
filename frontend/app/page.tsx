@@ -6,6 +6,7 @@ import { ErrorResponse } from "@/types";
 import {
   Box,
   Button,
+  CircularProgress,
   Container,
   Stack,
   TextField,
@@ -15,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Home() {
+  const [signupLoading, setSignupLoading] = useState(false);
   const router = useRouter();
   const { user, loadUser } = useUser();
   const { showError, showSuccess } = useToast();
@@ -29,8 +31,10 @@ export default function Home() {
   const validateUsername = () => {
     if (username.trim().length < 1) {
       setUsernameError("Username cannot be empty");
+      return true;
     } else {
       setUsernameError("");
+      return false;
     }
   };
 
@@ -39,28 +43,34 @@ export default function Home() {
 
     if (!emailRegex.test(email)) {
       setEmailError("Please enter a valid email");
+      return true;
     } else {
       setEmailError("");
+      return false;
     }
   };
 
   const validatePassword = () => {
     if (password.length < 6) {
       setPasswordError("Password must have a minimum length of 6");
+      return true;
     } else {
       setPasswordError("");
+      return false;
     }
   };
 
   const signUp = async () => {
     try {
-
+      setSignupLoading(true);
       // Validate form input
-      validateEmail();
-      validatePassword();
-      validateUsername();
+      const emailError = validateEmail();
+      const passwordError = validatePassword();
+      const usernameError = validateUsername();
 
       if(emailError || passwordError || usernameError) {
+        showError("Username or password is invalid")
+        setSignupLoading(false);
         return;
       }
 
@@ -86,14 +96,19 @@ export default function Home() {
       } = await response.json();
       
       await loadUser();
-      showSuccess(data.detail)
+
+      showSuccess(data.detail);
+
+      router.push("/manga");
+
     } catch(error) {
       if(error instanceof Error) {
         showError(error.message)
       } else {
         throw new Error("Username or password is incorrect")
       }
-
+    } finally {
+      setSignupLoading(false);
     }
   }
 
@@ -174,8 +189,8 @@ export default function Home() {
             }}
           />
           <Stack spacing={1} alignItems="center">
-            <Button fullWidth variant="contained" color="primary" onClick={signUp}>
-              Sign Up
+            <Button fullWidth disabled={signupLoading} variant="contained" color="primary" onClick={signUp} sx={{ height: "50px" }}>
+              { signupLoading ? <CircularProgress /> : "Sign Up"}
             </Button>
             <Typography
               onClick={() => {

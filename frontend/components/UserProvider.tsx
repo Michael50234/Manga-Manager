@@ -38,8 +38,9 @@ const UserProvider = ({ children }: {children: React.ReactNode}) => {
       return;
     };
 
-    // If no error is thrown take the response body and assign it to the user state
+    // If no error is thrown, take the response body and assign it to the user state
     const data = await response.json();
+
     setUser(data);
     setUserLoading(false);
   };
