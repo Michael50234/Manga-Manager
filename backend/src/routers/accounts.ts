@@ -17,7 +17,7 @@ accountsRouter.post("/login", async (req, res) => {
 
     if(!parsed.success) {
         res.status(400).json({
-            detail: `Request body not valid: ${parsed.error.message}`
+            detail: `Username or password is incorrect`
         });
         return;
     }
@@ -72,7 +72,7 @@ accountsRouter.post("/sign-up", async (req, res) => {
     
     if(!parsed.success) {
         res.status(400).json({
-            detail: `Request body is not valid: ${parsed.error.message}`
+            detail: `Username or password is not correct`
         })
         return;
     }
@@ -84,15 +84,18 @@ accountsRouter.post("/sign-up", async (req, res) => {
     // Hash the password 
     const hashedPassword = await bcrypt.hash(password, 10);;
 
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.user.findFirst({
         where: {
-            username: username
+            OR: [
+                {username: username},
+                {email: email}
+            ]
         }
     })
 
     if(existingUser) {
         res.status(400).json({
-            detail: "A user with this username already exists"
+            detail: "A user with this username or email already exists"
         });
         return;
     }
@@ -133,7 +136,7 @@ accountsRouter.patch("/update", JWTMiddleware, async (req, res) => {
     
     if(!validated.success) {
         res.status(400).json({
-            detail: `Failed to save changes: ${validated.error.message}`
+            detail: `Failed to save changes`
         });
         return;
     }

@@ -1,7 +1,6 @@
 import { JWTPayload } from "~/types";
 import jwt from "jsonwebtoken";
 import { prisma } from "~/prisma";
-import z from 'zod'
 import { NextFunction, Request, Response } from "express";
 
 // Validates JWT token and returns the user with the userId in the payload

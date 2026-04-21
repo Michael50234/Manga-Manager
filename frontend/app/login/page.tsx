@@ -1,5 +1,8 @@
 "use client";
 
+import { useToast } from "@/components/ToastProvider";
+import { useUser } from "@/components/UserProvider";
+import { ErrorResponse } from "@/types";
 import {
   Box,
   Button,
@@ -12,7 +15,14 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function Home() {
-    const router = useRouter();
+  const router = useRouter();
+  const {
+    showError,
+    showSuccess,
+  } = useToast();
+  const {
+    loadUser,
+  } = useUser();
 
   const [username, setUsername] = useState("");
   const [usernameError, setUsernameError] = useState("");
@@ -36,28 +46,49 @@ export default function Home() {
   };
 
   const login = async () => {
-    validateUsername();
-    validatePassword();
+    try {
+      // Validate the form input
+      validateUsername();
+      validatePassword();
 
-    // If there is a input validation, error cancel the login
-    if(usernameError || passwordError) {
-        return;
+      // If there is a input validation error, cancel the login
+      if(usernameError || passwordError) {
+          return;
+      }
+
+      // Send a request to log the user in
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username,
+          password,
+        })
+      });
+
+      // Handle errors
+      if(!response.ok) {
+        const error: ErrorResponse = await response.json();
+        throw new Error(error.detail)
+      }
+
+      const data: {
+        detail: string
+      } = await response.json();
+      
+      // Load the user record from the database into the global user state
+      await loadUser();
+      
+      showSuccess(data.detail);
+    } catch(error) {
+      if(error instanceof Error) {
+        showError(error.message)
+      } else {
+        showError("Your password or username is incorrect")
+      }
     }
-
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        username,
-        password
-      })
-    })
-
-    if(!response.ok) {
-    }
-
   }
 
   return (
@@ -123,8 +154,8 @@ export default function Home() {
         />
         </Stack>
         <Stack spacing={1} alignItems="center">
-          <Button fullWidth variant="contained" color="primary">
-            Submit
+          <Button fullWidth variant="contained" color="primary" onClick={login}>
+            Login
           </Button>
           <Typography
             onClick={() => {

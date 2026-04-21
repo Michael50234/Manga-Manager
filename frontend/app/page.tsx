@@ -1,5 +1,8 @@
 "use client";
 
+import { useToast } from "@/components/ToastProvider";
+import { useUser } from "@/components/UserProvider";
+import { ErrorResponse } from "@/types";
 import {
   Box,
   Button,
@@ -13,6 +16,8 @@ import { useState } from "react";
 
 export default function Home() {
   const router = useRouter();
+  const { user, loadUser } = useUser();
+  const { showError, showSuccess } = useToast();
 
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -47,8 +52,49 @@ export default function Home() {
     }
   };
 
-  const signUp = () => {
-    
+  const signUp = async () => {
+    try {
+
+      // Validate form input
+      validateEmail();
+      validatePassword();
+      validateUsername();
+
+      if(emailError || passwordError || usernameError) {
+        return;
+      }
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/sign-up`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username, 
+          email,
+          password,
+        })
+      })
+
+      if(!response.ok) {
+        const error: ErrorResponse = await response.json()
+        throw new Error(error.detail)
+      }
+
+      const data: {
+        detail: string
+      } = await response.json();
+      
+      await loadUser();
+      showSuccess(data.detail)
+    } catch(error) {
+      if(error instanceof Error) {
+        showError(error.message)
+      } else {
+        throw new Error("Username or password is incorrect")
+      }
+
+    }
   }
 
   return (
@@ -128,8 +174,8 @@ export default function Home() {
             }}
           />
           <Stack spacing={1} alignItems="center">
-            <Button fullWidth variant="contained" color="primary">
-              Submit
+            <Button fullWidth variant="contained" color="primary" onClick={signUp}>
+              Sign Up
             </Button>
             <Typography
               onClick={() => {

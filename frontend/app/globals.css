@@ -20,3 +20,16 @@
 
   --muted-surface: hsl(240, 3, 89);
 }
+
+html, body {
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}

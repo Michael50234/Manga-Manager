@@ -1,3 +1,4 @@
+// Database Resource Shapes
 export type User = {
     id: string,
     bio: string
@@ -5,4 +6,10 @@ export type User = {
     nickname: string,
     createdAt: Date,
     lastUpdatedAt: Date,
+}
+
+
+// Backend API Response Shapes
+export type ErrorResponse = {
+    detail: string
 }

@@ -19,7 +19,7 @@ type Toast = {
 };
 
 // Set the default value of the context for when it is accessed 
-export const ToastContext = createContext<ToastContext | null>(null);
+const ToastContext = createContext<ToastContext | null>(null);
 
 export const useToast = () => {
   const toastContext = useContext(ToastContext);
@@ -98,23 +98,25 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
       </ToastContext.Provider>
       {toastList.map((toast) => {
         const handleClose = () => {
-          setToastList((prev) =>  prev.filter((toastObject) => toastObject.id))
+          setToastList((prev) =>  prev.filter((toastObject) => toastObject.id !== toast.id))
         }
-
-        <Snackbar
-          open={true}
-          slots={{ transition: Grow }}
-          onClose={handleClose}
-          autoHideDuration={1600}
-        >
-          <Alert 
-            severity={toast.type}
+        return (
+          <Snackbar
+            key={toast.id}
+            open={true}
+            slots={{ transition: Grow }}
             onClose={handleClose}
-            variant="filled"
+            autoHideDuration={1600}
           >
-            {toast.message}
-          </Alert>
-        </Snackbar>
+            <Alert 
+              severity={toast.type}
+              onClose={handleClose}
+              variant="filled"
+            >
+              {toast.message}
+            </Alert>
+          </Snackbar>
+        )
       })}
     </>
   )

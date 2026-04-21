@@ -5,7 +5,7 @@ import React, { useContext, createContext, useState, useEffect } from 'react'
 
 type UserContext = {
     user: User | null,
-    loadUser: () => void,
+    loadUser: () => Promise<void>,
     setUser: React.Dispatch<React.SetStateAction<User | null>>
 };
 
@@ -17,6 +17,8 @@ export const useUser = () => {
   if(!userContext) {
     throw new Error("useUser can only be used within the userProvider")
   }
+
+  return userContext
 }
 
 const UserProvider = ({ children }: {children: React.ReactNode}) => {
@@ -26,13 +28,17 @@ const UserProvider = ({ children }: {children: React.ReactNode}) => {
   const loadUser = async () => {
     setUserLoading(true);
 
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE__URL}/accounts`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts`, {
+      method: "POST",
+      credentials: "include",
+    });
 
     // This case occurs when the JWT token is expired/invalid or when the user does not have a JWT cookie
     if(!response.ok) {
       return;
     };
 
+    // If no error is thrown take the response body and assign it to the user state
     const data = await response.json();
     setUser(data);
     setUserLoading(false);
