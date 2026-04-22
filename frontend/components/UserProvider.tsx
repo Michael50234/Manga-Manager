@@ -6,7 +6,8 @@ import React, { useContext, createContext, useState, useEffect } from 'react'
 type UserContext = {
     user: User | null,
     loadUser: () => Promise<void>,
-    setUser: React.Dispatch<React.SetStateAction<User | null>>
+    setUser: React.Dispatch<React.SetStateAction<User | null>>,
+    userLoading: boolean
 };
 
 const UserContext = createContext<UserContext | null>(null);
@@ -60,6 +61,7 @@ const UserProvider = ({ children }: {children: React.ReactNode}) => {
       user,
       setUser,
       loadUser, 
+      userLoading,
     }}>
       {children}
     </UserContext.Provider>

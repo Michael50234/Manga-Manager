@@ -72,9 +72,9 @@ export const Navbar = () => {
                                 display: "flex",
                                 px: "2px",
                                 backgroundColor: pathName === "/manga" ? "var(--primary)" : "transparent",
-                                boxShadow: pathName === "/manga" ? "inset 0 -3px 0 rgba(0,0,0,0.25)" : undefined,
+                                boxShadow: pathName === "/manga" ? "0 -3px 0 var(--primary-hover) inset" : undefined,
                                 "&:hover:not([data-active=''])" : {
-                                    boxShadow: "inset 0 -3px 0 var(--primary-hover)"
+                                    boxShadow: "0 -3px 0 var(--primary-hover) inset"
                                 },
                             }}
                         >
@@ -93,9 +93,9 @@ export const Navbar = () => {
                                 display: "flex",
                                 px: "2px",
                                 backgroundColor: pathName === "/manga/favourites" ? "var(--primary)" : "transparent",
-                                boxShadow: pathName === "/manga/favourites" ? "inset 0 -3px 0 rgba(0,0,0,0.25)" : undefined,
+                                boxShadow: pathName === "/manga/favourites" ? "0 -3px 0 var(--primary-hover) inset" : undefined,
                                 "&:hover:not([data-active=''])" : {
-                                    boxShadow: "inset 0 -3px 0 var(--primary-hover)"
+                                    boxShadow: "0 -3px 0 var(--primary-hover) inset"
                                 },
                             }}
                         >
@@ -114,9 +114,9 @@ export const Navbar = () => {
                                 display: "flex",
                                 px: "2px",
                                 backgroundColor: pathName === "/manga/tier-list" ? "var(--primary)" : "transparent",
-                                boxShadow: pathName === "/manga/tier-list" ? "inset 0 -3px 0 rgba(0,0,0,0.25)" : undefined,
+                                boxShadow: pathName === "/manga/tier-list" ? "0 -3px 0 var(--primary-hover) inset" : undefined,
                                 "&:hover:not([data-active=''])" : {
-                                    boxShadow: "inset 0 -3px 0 var(--primary-hover)"
+                                    boxShadow: "0 -3px 0 var(--primary-hover) inset"
                                 },
                             }}
                         >
@@ -124,12 +124,19 @@ export const Navbar = () => {
                         </Typography>
                     </Stack>
                     <Button 
-                        variant="text" 
+                        variant="outlined" 
                         sx={{
+                            borderRadius: "20px",
+                            height: "40px",
                             textTransform: "none",
                             fontWeight: "500",
                             color: "black",
-                            ml: "auto"
+                            ml: "auto",
+                            mt: "auto",
+                            mb: "auto",
+                            "&:hover": {
+                                backgroundColor: "primary.main"
+                            }
                         }}
                         disabled={logoutLoading}
                         onClick={logout}

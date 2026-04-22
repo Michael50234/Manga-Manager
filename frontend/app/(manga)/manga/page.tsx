@@ -1,5 +1,6 @@
 'use client';
 
+import ProtectedPage from '@/components/ProtectedPage';
 import { useUser } from '@/components/UserProvider'
 import { Box, Typography } from '@mui/material'
 import React from 'react'
@@ -25,7 +26,10 @@ const page = () => {
                 px: "20px"
             }}
         >
-            <Typography>{user?.email  ?? "Hello"}</Typography>
+            <ProtectedPage>
+                <Typography>{user?.email  ?? "Hello"}</Typography>
+            </ProtectedPage>
+            
         </Box>
     </Box>
   )

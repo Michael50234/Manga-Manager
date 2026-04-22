@@ -148,6 +148,7 @@ export default function Login() {
           />
         <TextField
             label="Password"
+            type="password"
             value={password}
             error={!!passwordError}
             helperText={!!passwordError ? passwordError : ""}

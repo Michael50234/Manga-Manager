@@ -1,7 +1,7 @@
 :root {
-  --bg-light: hsl(240, 18, 90);
-  --bg: hsl(240, 18, 94);
-  --bg-dark: hsl(240, 18, 98);
+  --bg-light: hsl(240, 70, 90);
+  --bg: hsl(240, 70, 94);
+  --bg-dark: hsl(240, 70, 98);
 
   --border: hsl(235, 18, 40);
   --border-dark: hsl(235, 18, 55);
@@ -12,7 +12,7 @@
   --primary: hsl(232, 61, 72);
   --primary-hover: hsl(232, 61, 60);
 
-  --secondary: hsl(52, 61, 72);
+  --secondary: hsl(52, 74%, 57%);
   --secondary-hover: hsl(52, 61, 60);
 
   --text: hsl(0, 0, 9);
