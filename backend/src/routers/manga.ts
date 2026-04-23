@@ -43,7 +43,8 @@ mangaRouter.get("/", async (req, res) => {
     const searchParams = new URLSearchParams([
         ["includes[]", "manga"],
         ["includes[]", "author"], 
-        ["includes[]", "tag"]
+        ["includes[]", "tag"],
+        ["includes[]", "cover_art"]
     ])
 
     // Add pagination params
