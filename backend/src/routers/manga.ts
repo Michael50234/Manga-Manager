@@ -37,12 +37,13 @@ mangaRouter.get("/", async (req, res) => {
     const limit = queryParams.limit;
     const searchText = queryParams.searchText;
     const tags = queryParams.tags;
+    const releaseYear = queryParams.releaseYear;
 
     // Create URLSearchParams object and add default search params
     const searchParams = new URLSearchParams([
-        ["includes", "manga"],
-        ["includes", "author"], 
-        ["includes", "tag"]
+        ["includes[]", "manga"],
+        ["includes[]", "author"], 
+        ["includes[]", "tag"]
     ])
 
     // Add pagination params
@@ -57,6 +58,10 @@ mangaRouter.get("/", async (req, res) => {
     tags?.forEach((tag) => {
         searchParams.append("includedTags", tag);
     })
+
+    if(releaseYear) {
+        searchParams.append("year", String(releaseYear));
+    }
 
     // Fetch manga from MangaDex
     const response = await fetch(`https://api.mangadex.org/manga?${searchParams.toString()}`)

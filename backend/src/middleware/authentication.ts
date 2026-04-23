@@ -10,7 +10,7 @@ export async function JWTMiddleware(req: Request, res: Response, next: NextFunct
 
     if(!accessToken) {
         res.status(401).json({
-            detail: "User is not authorized"
+            detail: "JWT token was not included in the request"
         });
         return;
     } 
@@ -22,7 +22,7 @@ export async function JWTMiddleware(req: Request, res: Response, next: NextFunct
         payload = jwt.verify(accessToken, process.env.JWT_SECRET!) as unknown as JWTPayload;
     } catch {
         res.status(401).json({
-            detail: "User is not authorized"
+            detail: "JWT token is not valid"
         })
         return
     }
@@ -36,7 +36,7 @@ export async function JWTMiddleware(req: Request, res: Response, next: NextFunct
 
     if(!user) {
         res.status(401).json({
-            detail: "User is not authorized"
+            detail: "User does not exist in the database"
         });
         return;
     }

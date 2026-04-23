@@ -30,24 +30,15 @@ model User {
   @@index([username])
 }
 
-enum ReleaseStatus {
-  Completed
-  Ongoing
-}
-
+// The manga model in the database is just used to record relationships
+// It stores the mangaDexId, which is used to fetch the actual manga data from mangaDex
 model Manga {
   id     String @id @default(uuid())
   title   String
-  author String
-  description String
+  mangaDexId String 
 
-  releaseStatus ReleaseStatus
-  lastReleasedChapter Int
-  lastReleasedVolume Int
-  lastSeriesUpdateDate DateTime
-
-  // This is the last time the series record in database was updated
   lastUpdatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 
   favouritedBy User[]
   userMangaPreferences UserMangaPreference[]
@@ -86,6 +77,7 @@ model UserMangaPreference {
   // We allow the user to specify the release date because different platforms may release on different days
   mangaReleaseDay DayOfWeek?
   tierListRank MangaTierListRank @default(Unranked)
+
   lastUpdatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
 

@@ -25,6 +25,16 @@ export const getManhwaListSchema = z.object({
     // This is an array of tag uuids
     tags: z.array(z.uuid())
         .optional(),    
+    releaseYear: z.string().transform((year) => Number(year)).refine((year) => {
+        // Use refine instead of max to generate the year at evaluation time
+        return year <= new Date().getFullYear()
+    }, {
+        message: "The year cannot be greater than the current year"
+    }).refine((year) => {
+        return 1970 <= year
+    }, {
+        message: "The year must be greater than 1970"
+    }).optional()
 })
 
 export const editUserMangaPreferenceSchema =  z.object({
