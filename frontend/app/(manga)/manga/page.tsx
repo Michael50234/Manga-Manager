@@ -23,10 +23,8 @@ const page = () => {
 
     // Filter States
     const [searchText, setSearchText] = useState("");
-    // This is used to implement debounced search
-    const [debouncedSearchText, setDecouncedSearchText] = useState("");
     // This is an array of MangaDex tag ids
-    const [filteredTags, setFilteredTags] = useState<string[]>([]);
+    const [filteredTags, setFilteredTags] = useState<Tag[]>([]);
     const [releaseYear, setReleaseYear] = useState<null | number>(null)
 
     // Pagination States
@@ -57,6 +55,7 @@ const page = () => {
         loadData();
     }, [searchText, filteredTags, page, rowsPerPage, releaseYear])
 
+    // Load the tags from MangaDex
     useEffect(() => {
         const loadData = async () => {
             try {
@@ -110,7 +109,7 @@ const page = () => {
         }
         
         filteredTags.forEach((tag) => {
-            searchParams.append("tag[]", tag);
+            searchParams.append("tag[]", tag.name);
         });
 
         // Query for list of manga
@@ -152,23 +151,26 @@ const page = () => {
                     minHeight: "100vh",
                     width: "100%",
                     display: "flex",
-                    justifyContent: "center",
+                    flexDirection: "column",
+                    alignItems: "center",
                     px: "20px"
                 }}
             >
-                <SearchBar />
-                <ProtectedPage>
-                    { tagsLoading || mangaLoading ? 
-                        (
-                            <Backdrop
-                                open={true}
-                            >
-                                <CircularProgress />
-                            </Backdrop>
-                        ) : (
-                            <MangaGrid mangaList={mangaList}/>
-                        )
-                    }
+                <ProtectedPage isContentLoading={tagsLoading || mangaLoading}>
+                    <SearchBar 
+                        searchText={searchText} 
+                        setSearchText={setSearchText}
+                        filteredTags={filteredTags}
+                        setFilteredTags={setFilteredTags}
+                        releaseYear={releaseYear}
+                        setReleaseYear={setReleaseYear} 
+                        page={page}
+                        setPage={setPage}
+                        rowsPerPage={rowsPerPage}
+                        setRowsPerPage={setRowsPerPage}
+                        tags={tags}
+                    />
+                    <MangaGrid mangaList={mangaList}/>
                 </ProtectedPage>
                 
             </Box>

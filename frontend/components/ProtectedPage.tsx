@@ -5,7 +5,7 @@ import { useUser } from './UserProvider'
 import { useRouter } from 'next/navigation';
 import { Backdrop, Box, CircularProgress } from '@mui/material';
 
-const ProtectedPage = ({ children }: { children: React.ReactNode}) => {
+const ProtectedPage = ({ children, isContentLoading }: { children: React.ReactNode, isContentLoading: boolean }) => {
   const { user, userLoading } = useUser();
   const [authLoading, setAuthLoading] = useState(true);
   const router = useRouter();
@@ -23,7 +23,7 @@ const ProtectedPage = ({ children }: { children: React.ReactNode}) => {
 
   return (
     <>
-      { userLoading || authLoading ? (
+      { userLoading || authLoading || isContentLoading ? (
         <Backdrop
           open={true}
         >
