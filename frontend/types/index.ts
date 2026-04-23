@@ -24,7 +24,7 @@ export type Manga = {
   status: "completed" | "ongoing" | "hiatus" | "canceled",
   latestChapter: string,
   latestChapterId: string,
-  lastUpdatedAt: Date,
+  lastUpdatedAt: string,
 
   coverImageUrl: string,
 }

@@ -41,26 +41,36 @@ export async function getClientMangaFromMangaDexManga(mangaList: any): Promise<M
 
 // Takes a list of chapterIds and returns a map mapping each chapterId to a chapter number
 export async function getChapterIdToNumberMap(chapterIdList: string[]) {
-    const chapterIdtoNumberMap = new Map<string, string>();
+    try {
+        const chapterIdtoNumberMap = new Map<string, string>();
 
-    // Add the ids of the latest manga chapters to the searchParams
-    const searchParams = new URLSearchParams();
+        // Add the ids of the latest manga chapters to the searchParams
+        const searchParams = new URLSearchParams();
 
-    chapterIdList.forEach((chapterId) => {
-        searchParams.append("ids[]", chapterId);
-    })
+        chapterIdList.forEach((chapterId) => {
+            searchParams.append("ids[]", chapterId);
+        })
 
-    // Query for the details of the latest manga chapters
-    const response = await fetch(`https://api.mangadex.org/chapter?${searchParams.toString()}`);
+        searchParams.append("limit", `${chapterIdList.length}`)
 
-    const data = (await response.json()).data;
+        // Query for the details of the latest manga chapters
+        const response = await fetch(`https://api.mangadex.org/chapter?${searchParams.toString()}`);
 
-    // Create a hash map mapping chapter ids to their chapter number
-    data.forEach((manga: any) => {
-        chapterIdtoNumberMap.set(manga.id, manga.attributes.chapter)
-    })
+        if(!response.ok) {
+            throw new Error("Failed to get load latest chapter number")
+        }
+        
+        const chapterList = (await response.json()).data;
 
-    return chapterIdtoNumberMap;
+        // Create a hash map mapping chapter ids to their chapter number
+        chapterList.forEach((chapter: any) => {
+            chapterIdtoNumberMap.set(chapter.id, chapter.attributes.chapter)
+        })
+
+        return chapterIdtoNumberMap;
+    } catch(error) {
+        throw new Error("Failed to fetch chapters")
+    }
 }
 
 // Takes a MangaDex manga and returns a title in a supported language or No Title

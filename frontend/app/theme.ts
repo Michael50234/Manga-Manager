@@ -26,13 +26,14 @@ export const theme = createTheme({
     fontFamily: "var(--font-poppins), sans-serif",
   },
   components: {
-    // MuiButton: {
-    //     defaultProps: {
-    //     },
-    //     styleOverrides: {
-    //         containedPrimary: {
-    //         }
-    //     }
-    // }
+    MuiButton: {
+        defaultProps: {
+        },
+        styleOverrides: {
+          root: {
+            textTransform: "none"
+          }
+        }
+    }
   },
 });

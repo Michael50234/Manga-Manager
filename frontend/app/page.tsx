@@ -69,7 +69,6 @@ export default function Home() {
       const usernameError = validateUsername();
 
       if(emailError || passwordError || usernameError) {
-        showError("Username or password is invalid")
         setSignupLoading(false);
         return;
       }

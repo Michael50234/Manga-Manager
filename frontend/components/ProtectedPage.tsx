@@ -19,7 +19,6 @@ const ProtectedPage = ({ children }: { children: React.ReactNode}) => {
     }
 
     setAuthLoading(false);
-
   }, [userLoading])
 
   return (

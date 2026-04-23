@@ -124,9 +124,9 @@ export const Navbar = () => {
                         </Typography>
                     </Stack>
                     <Button 
-                        variant="outlined" 
+                        variant="text" 
                         sx={{
-                            borderRadius: "20px",
+                            borderRadius: "10px",
                             height: "40px",
                             textTransform: "none",
                             fontWeight: "500",

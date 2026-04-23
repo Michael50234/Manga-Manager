@@ -18,7 +18,7 @@
   --text: hsl(0, 0, 9);
   --text-muted: hsl(0, 0, 45);
 
-  --muted-surface: hsl(240, 3, 89);
+  --muted-surface: hsl(240, 50%, 94%);
 }
 
 html, body {
