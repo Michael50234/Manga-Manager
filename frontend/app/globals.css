@@ -2,10 +2,10 @@
   --bg-light: hsl(240, 70, 90);
   --bg: hsl(240, 70, 94);
   --bg-dark: hsl(240, 70, 98);
-
-  --border: hsl(235, 18, 40);
-  --border-dark: hsl(235, 18, 55);
-  --border-light: hsl(235, 18, 60);
+  
+  --border-dark: hsl(235, 18, 60);
+  --border: hsl(235, 18, 55);
+  --border-light: hsl(235, 18, 50);
 
   --highlight: hsl(0, 0, 98);
 

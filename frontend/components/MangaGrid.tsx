@@ -20,6 +20,7 @@ const MangaGrid = ({mangaList}: MangaGridProps) => {
             gridAutoRows: "200px",
             width: "90%",
             gap: 2,
+            height: "90%"
         }}>
             { mangaList.map((manga) => {
                 return <MangaCard key={manga.id} manga={manga}/>

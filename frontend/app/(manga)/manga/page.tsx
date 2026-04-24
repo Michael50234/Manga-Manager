@@ -22,7 +22,7 @@ const page = () => {
     const [tagsLoading, setTagsLoading] = useState(true);
 
     // Filter States
-    const [searchText, setSearchText] = useState("");
+    const [debouncedSearchText, setDebouncedSearchText] = useState("");
     // This is an array of MangaDex tag ids
     const [filteredTags, setFilteredTags] = useState<Tag[]>([]);
     const [releaseYear, setReleaseYear] = useState<null | number>(null)
@@ -53,7 +53,7 @@ const page = () => {
         }
 
         loadData();
-    }, [searchText, filteredTags, page, rowsPerPage, releaseYear])
+    }, [debouncedSearchText, filteredTags, page, rowsPerPage, releaseYear])
 
     // Load the tags from MangaDex
     useEffect(() => {
@@ -100,8 +100,8 @@ const page = () => {
         searchParams.append("limit", String(rowsPerPage));
 
         // Add filter params
-        if(searchText.trim()) {
-            searchParams.append("searchText", searchText);
+        if(debouncedSearchText.trim()) {
+            searchParams.append("searchText", debouncedSearchText.trim());
         }
         
         if(releaseYear) {
@@ -109,7 +109,7 @@ const page = () => {
         }
         
         filteredTags.forEach((tag) => {
-            searchParams.append("tag[]", tag.name);
+            searchParams.append("tags", tag.id);
         });
 
         // Query for list of manga
@@ -148,7 +148,7 @@ const page = () => {
             }}/>
             <Box
                 sx={{
-                    minHeight: "100vh",
+                    minHeight: "90vh",
                     width: "100%",
                     display: "flex",
                     flexDirection: "column",
@@ -157,9 +157,10 @@ const page = () => {
                 }}
             >
                 <ProtectedPage isContentLoading={tagsLoading || mangaLoading}>
+                    <Typography sx={{ fontSize: "2.5rem", mt: "20px", fontWeight: 600}}>Discover New Manga</Typography>
                     <SearchBar 
-                        searchText={searchText} 
-                        setSearchText={setSearchText}
+                        debouncedSearchText={debouncedSearchText} 
+                        setDebouncedSearchText={setDebouncedSearchText}
                         filteredTags={filteredTags}
                         setFilteredTags={setFilteredTags}
                         releaseYear={releaseYear}
