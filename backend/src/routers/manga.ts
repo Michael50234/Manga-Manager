@@ -23,6 +23,7 @@ mangaRouter.get("/", async (req, res) => {
     // The query parameters include: page, limit, searchText, and a list of tags
     // Validate the request body
     const parsed = getManhwaListSchema.safeParse(req.query)
+    console.log("query", req.query)
 
     if(!parsed.success) {
         res.status(400).json({
@@ -57,12 +58,14 @@ mangaRouter.get("/", async (req, res) => {
     }
 
     tags?.forEach((tag) => {
-        searchParams.append("includedTags", tag);
+        searchParams.append("includedTags[]", tag);
     })
 
     if(releaseYear) {
         searchParams.append("year", String(releaseYear));
     }
+
+    console.log("link", `https://api.mangadex.org/manga?${searchParams.toString()}`)
 
     // Fetch manga from MangaDex
     const response = await fetch(`https://api.mangadex.org/manga?${searchParams.toString()}`)

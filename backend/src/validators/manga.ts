@@ -23,7 +23,11 @@ export const getManhwaListSchema = z.object({
         .transform((searchText) => searchText.trim())
         .optional(),
     // This is an array of tag uuids
-    tags: z.array(z.uuid())
+    tags: z.preprocess((val) => {
+        // Tags can be undefined, string, or array of strings
+        // Normalize tags to array of strings
+        return Array.isArray(val) ? val : val ? [val] : val
+    }, z.array(z.uuid()))
         .optional(),    
     releaseYear: z.string().transform((year) => Number(year)).refine((year) => {
         // Use refine instead of max to generate the year at evaluation time
