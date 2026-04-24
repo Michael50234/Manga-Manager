@@ -12,10 +12,6 @@ type SearchBarProps = {
     setFilteredTags: React.Dispatch<React.SetStateAction<Tag[]>>, 
     releaseYear: number | null, 
     setReleaseYear: React.Dispatch<React.SetStateAction<number | null>>, 
-    page: number, 
-    setPage: React.Dispatch<React.SetStateAction<number>>, 
-    rowsPerPage: number, 
-    setRowsPerPage: React.Dispatch<React.SetStateAction<number>>, 
     tags: Tag[],
 }
 
@@ -26,10 +22,6 @@ const SearchBar = ({
         setFilteredTags, 
         releaseYear, 
         setReleaseYear, 
-        page, 
-        setPage, 
-        rowsPerPage, 
-        setRowsPerPage, 
         tags
     }: SearchBarProps) => {
 

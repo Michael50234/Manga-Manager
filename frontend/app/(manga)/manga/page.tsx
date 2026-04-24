@@ -3,12 +3,13 @@
 import ProtectedPage from '@/components/ProtectedPage';
 import { useUser } from '@/components/UserProvider'
 import { Manga, Tag } from '@/types';
-import { AppBar, Backdrop, Box, CircularProgress, Toolbar, Typography } from '@mui/material'
-import React, { useEffect, useState } from 'react'
+import { AppBar, Backdrop, Box, CircularProgress, Stack, Toolbar, Typography } from '@mui/material'
+import React, { useEffect, useMemo, useState } from 'react'
 import { getClientMangaFromMangaDexManga } from '@/utils/mangaDex';
 import { useToast } from '@/components/ToastProvider';
 import MangaGrid from '@/components/MangaGrid';
 import SearchBar from '@/components/SearchBar';
+import PaginationControls from '@/components/PaginationControls';
 
 const page = () => {
     const { user } = useUser();
@@ -16,6 +17,7 @@ const page = () => {
 
     const [mangaList, setMangaList] = useState<Manga[]>([]);
     const [tags, setTags] = useState<Tag[]>([]);
+    const [totalFilteredManga, setTotalFilteredManga] = useState(0);
 
     // Loading States
     const [mangaLoading, setMangaLoading] = useState(true);
@@ -28,12 +30,8 @@ const page = () => {
     const [releaseYear, setReleaseYear] = useState<null | number>(null)
 
     // Pagination States
-    const [rowsPerPage, setRowsPerPage] = useState(15);
+    const [entriesPerPage, setEntriesPerPage] = useState(10);
     const [page, setPage] = useState(1);
-
-    useEffect(() => {
-
-    }, [])
 
     // Load the manga from the backend
     useEffect(() => {
@@ -53,7 +51,7 @@ const page = () => {
         }
 
         loadData();
-    }, [debouncedSearchText, filteredTags, page, rowsPerPage, releaseYear])
+    }, [debouncedSearchText, filteredTags, page, entriesPerPage, releaseYear])
 
     // Load the tags from MangaDex
     useEffect(() => {
@@ -67,8 +65,26 @@ const page = () => {
             }
             
         }
+
         loadData();
     }, [])
+
+    // When any of the query parameters or entriesPerPage changes reset the page to 1
+    useEffect(() => {
+        setPage(1);
+    }, [debouncedSearchText, filteredTags, releaseYear, entriesPerPage])
+
+    const totalPages = useMemo(() => {
+        
+        const totalPages = Math.ceil(totalFilteredManga / entriesPerPage);
+        
+        // MangaDex has the constraint that (offset + limit) <= 10000, so we must limit the max page to 10000 / entriesPerPage 
+        if(totalPages > Math.ceil(10000 / entriesPerPage)) {
+            return Math.ceil(10000 / entriesPerPage);
+        }
+
+        return totalPages;
+    }, [totalFilteredManga, entriesPerPage])
 
     const loadTags = async () => {
         const response = await fetch("https://api.mangadex.org/manga/tag")
@@ -97,7 +113,7 @@ const page = () => {
 
         // Add pagination params
         searchParams.append("page", String(page));
-        searchParams.append("limit", String(rowsPerPage));
+        searchParams.append("limit", String(entriesPerPage));
 
         // Add filter params
         if(debouncedSearchText.trim()) {
@@ -122,17 +138,18 @@ const page = () => {
             throw new Error("Failed to load manga")
         }
 
-        const mangaDexMangaList = (await response.json()).data;
+        const data = await response.json();
+        const mangaDexMangaList = data.data;
 
         // Transform returned manga objects into client manga types
         const clientMangaList = await getClientMangaFromMangaDexManga(mangaDexMangaList);
 
         // Set the mangaList state
         setMangaList(clientMangaList);
+        setTotalFilteredManga(data.total);
 
         // TODO: Remove this after finishing developing this page
-        console.log("MangaList", clientMangaList)
-        console.log("Raw Manga", mangaDexMangaList)
+        console.log(data)
     }
 
     return (
@@ -157,23 +174,73 @@ const page = () => {
                 }}
             >
                 <ProtectedPage isContentLoading={tagsLoading || mangaLoading}>
-                    <Typography sx={{ fontSize: "2.5rem", mt: "20px", fontWeight: 600}}>Discover New Manga</Typography>
-                    <SearchBar 
-                        debouncedSearchText={debouncedSearchText} 
-                        setDebouncedSearchText={setDebouncedSearchText}
-                        filteredTags={filteredTags}
-                        setFilteredTags={setFilteredTags}
-                        releaseYear={releaseYear}
-                        setReleaseYear={setReleaseYear} 
-                        page={page}
-                        setPage={setPage}
-                        rowsPerPage={rowsPerPage}
-                        setRowsPerPage={setRowsPerPage}
-                        tags={tags}
-                    />
-                    <MangaGrid mangaList={mangaList}/>
+                    <Stack 
+                        spacing={5}
+                        sx={{
+                            mt: "20px",
+                            width: "100%",
+                            alignItems: "center",
+                        }}
+                    >
+                        <Typography sx={{ fontSize: "3rem", mt: "40px", fontWeight: 600}}>Discover New Manga</Typography>
+                        <SearchBar 
+                            debouncedSearchText={debouncedSearchText} 
+                            setDebouncedSearchText={setDebouncedSearchText}
+                            filteredTags={filteredTags}
+                            setFilteredTags={setFilteredTags}
+                            releaseYear={releaseYear}
+                            setReleaseYear={setReleaseYear} 
+                            tags={tags}
+                        />
+                        <Stack 
+                            spacing={4}
+                            sx={{
+                                alignItems: "center",
+                                width: "100%"
+                            }}
+                        >
+                            { totalFilteredManga > 0 ? 
+                                (
+                                    <>
+                                        <PaginationControls 
+                                            entriesPerPage={entriesPerPage}
+                                            setEntriesPerPage={setEntriesPerPage}
+                                            page={page}
+                                            setPage={setPage}
+                                            totalPages={totalPages}
+                                        />
+                                        <MangaGrid mangaList={mangaList}/>
+                                        <PaginationControls 
+                                            entriesPerPage={entriesPerPage}
+                                            setEntriesPerPage={setEntriesPerPage}
+                                            page={page}
+                                            setPage={setPage}
+                                            totalPages={totalPages}
+                                        />
+                                    </>
+                                ) : (
+                                    <Box sx={{
+                                        py: "200px",
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        justifyContent: "center"
+                                    }}>
+                                        <Typography sx={{
+                                            fontSize: "3rem",
+                                            fontWeight: 600,
+                                        }}>
+                                            No Manga Found
+                                        </Typography>
+                                        <Typography sx={{
+                                            color: "var(--text-muted)"
+                                        }}>You Searched For {debouncedSearchText}</Typography>
+                                    </Box>
+                                )
+                            }
+                        </Stack>
+                    </Stack>
                 </ProtectedPage>
-                
             </Box>
         </Box>
     )
