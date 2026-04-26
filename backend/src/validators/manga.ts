@@ -6,7 +6,7 @@ export const getManhwaListSchema = z.object({
         .refine((page) => {
             return page >= 0
         }, {
-            message: "page number cannot be negative"
+            message: "Page number cannot be negative"
         }),
     limit: z.string()
         .transform((limit) => parseInt(limit, 10))

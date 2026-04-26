@@ -23,7 +23,6 @@ mangaRouter.get("/", async (req, res) => {
     // The query parameters include: page, limit, searchText, and a list of tags
     // Validate the request body
     const parsed = getManhwaListSchema.safeParse(req.query)
-    console.log("query", req.query)
 
     if(!parsed.success) {
         res.status(400).json({
@@ -42,7 +41,6 @@ mangaRouter.get("/", async (req, res) => {
 
     // Create URLSearchParams object and add default search params
     const searchParams = new URLSearchParams([
-        ["includes[]", "manga"],
         ["includes[]", "author"], 
         ["includes[]", "tag"],
         ["includes[]", "cover_art"]
@@ -65,12 +63,12 @@ mangaRouter.get("/", async (req, res) => {
         searchParams.append("year", String(releaseYear));
     }
 
-    console.log("link", `https://api.mangadex.org/manga?${searchParams.toString()}`)
-
     // Fetch manga from MangaDex
     const response = await fetch(`https://api.mangadex.org/manga?${searchParams.toString()}`)
 
     if(!response.ok) {
+        console.error("Failed to fetch manga from MangaDex")
+
         res.status(404).json({
             detatil: "Failed to fetch manga from MangaDex"
         })
@@ -89,6 +87,8 @@ mangaRouter.get("/tag-list", async (req, res) => {
     const response = await fetch("https://api.mangadex.org/manga/tag")
 
     if(!response.ok) {
+        console.error("Failed to fetch tags from MangaDex")
+
         res.status(404).json({
             detail: "Failed to fetch tags"
         });
@@ -157,17 +157,60 @@ mangaRouter.route("/:id/user-manga-preference")
 
 // Returns a list of the users manga preference settings
 mangaRouter.get("/user-manga-preferences", (req, res) => {
+    const user = req.user!;
 
+    // Find all manga preferences belonging to the user
+    const mangaPreferences = prisma.userMangaPreference.findMany({
+        where: {
+            userId: user.id,
+        }
+    });
 })
 
 // Returns a list of recomended manga based on a manga
-mangaRouter.get("/:id/recomended", () => {
+mangaRouter.get("/:id/recomended", async (req, res) => {
+    const mangaId = req.body.mangaId;
+
+    // Fetch recommendations from MangaDex
+    const response = await fetch(`https://api.mangadex.org/manga/${mangaId}/recommendation?order[score]=desc`);
+    
+    // Handle fetching errors
+    if(!response.ok) {
+        console.error("Failed to fetch recommended manga from MangaDex");
+
+        res.status(404).json({
+            detail: "Failed to fetch recommended manga from MangaDex"
+        });
+
+        return;
+    }
+
+    const data = await response.json();
+
+    // Return recomended manga
+    res.status(200).json(data);
 
 })
 
 // Returns the details of a specific manga
 // The id is the id of the manga
-mangaRouter.get("/:id", (req, res) => {
-    
+mangaRouter.get("/:id", async (req, res) => {
+    const mangaId = req.body.mangaId;
+
+    const response = await fetch(`https://api.mangadex.org/manga/${mangaId}`)
+
+    if(!response.ok) {
+        console.error("Failed to fetch details for the manga")
+        
+        res.status(404).json({
+            detail: "Failed to fetch details for the manga"
+        });
+        
+        return
+    }
+
+    const data = await response.json();
+
+    res.status(290).json(data);
 });
 
