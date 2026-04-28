@@ -2,7 +2,7 @@
 
 import ProtectedPage from '@/components/ProtectedPage';
 import { useUser } from '@/components/UserProvider'
-import { Manga, Tag } from '@/types';
+import { FavouriteMangaObject, Manga, Tag, UserMangaPreference } from '@/types';
 import { AppBar, Backdrop, Box, CircularProgress, Stack, Toolbar, Typography } from '@mui/material'
 import React, { useEffect, useMemo, useState } from 'react'
 import { getClientMangaFromMangaDexManga } from '@/utils/mangaDex';
@@ -51,7 +51,7 @@ const page = () => {
         }
 
         loadData();
-    }, [debouncedSearchText, filteredTags, page, entriesPerPage, releaseYear])
+    }, [debouncedSearchText, filteredTags, page, entriesPerPage, releaseYear]);
 
     // Load the tags from MangaDex
     useEffect(() => {
@@ -67,7 +67,7 @@ const page = () => {
         }
 
         loadData();
-    }, [])
+    }, []);
 
     // When any of the query parameters or entriesPerPage changes reset the page to 1
     useEffect(() => {
@@ -84,25 +84,30 @@ const page = () => {
         }
 
         return totalPages;
-    }, [totalFilteredManga, entriesPerPage])
+    }, [totalFilteredManga, entriesPerPage]);
 
     const loadTags = async () => {
-        const response = await fetch("https://api.mangadex.org/manga/tag")
+        // Get list of all tags from MangaDex
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/manga/tag-list`, {
+            credentials: "include"
+        })
 
         if(!response.ok) {
             throw new Error("Failed to fetch tags")
         }
 
-        const data = (await response.json()).data
+        const data = (await response.json()).data;
 
+        // Convert the MangaDex tag objects into the client Tag type
         const tags: Tag[] = data.map((tag: any) => {
             return {
                 id: tag.id,
                 name: tag.attributes.name.en || "No Name"
             }
-        })
+        });
 
-        setTags(tags)
+        // Set the value of the tags state
+        setTags(tags);
 
         // TODO: Remove after development
         console.log("Tags", tags);
@@ -128,7 +133,7 @@ const page = () => {
             searchParams.append("tags", tag.id);
         });
 
-        // Query for list of manga
+        // Query for the list of manga
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/manga/?${searchParams.toString()}`, {
             method: "GET",
             credentials: "include"
@@ -144,12 +149,13 @@ const page = () => {
         // Transform returned manga objects into client manga types
         const clientMangaList = await getClientMangaFromMangaDexManga(mangaDexMangaList);
 
-        // Set the mangaList state
+        // Set the mangaList totalFilteredManga states
         setMangaList(clientMangaList);
         setTotalFilteredManga(data.total);
 
         // TODO: Remove this after finishing developing this page
-        console.log(data)
+        console.log(clientMangaList)
+        console.log("data", mangaDexMangaList)
     }
 
     return (
@@ -209,7 +215,7 @@ const page = () => {
                                             setPage={setPage}
                                             totalPages={totalPages}
                                         />
-                                        <MangaGrid mangaList={mangaList}/>
+                                        <MangaGrid mangaList={mangaList} />
                                         <PaginationControls 
                                             entriesPerPage={entriesPerPage}
                                             setEntriesPerPage={setEntriesPerPage}

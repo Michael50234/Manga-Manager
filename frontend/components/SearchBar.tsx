@@ -29,7 +29,6 @@ const SearchBar = ({
     const [anchorElTagFilter, setAnchorElTagFilter] = useState<Element | null>(null);
 
     useEffect(() => {
-        console.log("search", debouncedSearchText)
         const searchTimeout = setTimeout(() => {
             setDebouncedSearchText(searchText);
         }, 600)

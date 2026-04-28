@@ -29,10 +29,35 @@ export type Manga = {
   coverImageUrl: string,
 }
 
+export type FavouriteMangaObject = {
+    id: string;
+    mangaDexId: string;
+    title: string;
+    lastUpdatedAt: Date;
+    createdAt: Date;
+}
+
+
+export type UserMangaPreference = {
+    id: string,
+    manga?: {
+        mangaDexId: string;
+    },
+    mangaAccessLink: string | null,
+    sendNotifications: boolean | null,
+    mangaReleaseDay: "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday" | null,
+    tierListRank: "GodTier" | "S" | "A" | "B" | "C" | "D" | "F" | "Dropped" | "Unranked"
+    lastUpdatedAt: Date;
+    createdAt: Date;
+    userId: string;
+    mangaId: string;
+}
 
 // Backend API Response Types
 export type ErrorResponse = {
     detail: string,
 }
+
+
 
 
