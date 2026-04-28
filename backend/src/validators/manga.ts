@@ -47,3 +47,11 @@ export const editUserMangaPreferenceSchema =  z.object({
     mangaReleaseDay: z.enum(["Monday", "Tuesday", "Wednesday", "Thursday",  "Friday", "Saturday", "Sunday"]).optional(),
     tierListRank: z.enum(["GodTier", "S", "A", "B", "C" , "D", "F" , "Dropped", "Unranked"]).optional()
 })
+
+export const addFavouriteMangaSchema = z.object({
+    mangaId: z.uuid(),
+})
+
+export const getRecommendedMangaSchema = z.object({
+    mangaId: z.uuid(),
+})

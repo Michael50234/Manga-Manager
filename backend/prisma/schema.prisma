@@ -35,13 +35,15 @@ model User {
 model Manga {
   id     String @id @default(uuid())
   title   String
-  mangaDexId String 
+  mangaDexId String @unique
 
   lastUpdatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
 
   favouritedBy User[]
   userMangaPreferences UserMangaPreference[]
+
+  @@index([mangaDexId])
 }
 
 // On the frontend also allow a none option
