@@ -1,9 +1,11 @@
 'use client';
 
 import { Manga } from '@/types'
+import { getClientMangaFromMangaDexManga } from '@/utils/mangaDex';
 import { Close, StarBorder } from '@mui/icons-material'
 import { Box, Button, Chip, CircularProgress, Dialog, DialogTitle, Icon, IconButton, Stack, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
+import { useToast } from './ToastProvider';
 
 type MangaCardProps = {
   manga: Manga,
@@ -12,10 +14,12 @@ type MangaCardProps = {
 }
 
 const MangaCard = ({ manga }: MangaCardProps) => {
+  const { showError, showSuccess } = useToast();
+
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
   const [preferenceDialogOpen, setPreferenceDialogOpen] = useState(false);
   
-  const [recomendedMangaLoading, setRecomendedMangaLoading] = useState(false);
+  const [recomendedMangaLoading, setRecommendedMangaLoading] = useState(false);
   const [recommendedManga, setRecomendedManga] = useState<Manga[]>([]);
 
 
@@ -28,23 +32,55 @@ const MangaCard = ({ manga }: MangaCardProps) => {
   }
 
   const fetchRecommendedManga = async () => {
-    setRecomendedMangaLoading(true);
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/manga/${manga.id}/recommended`, {
-      method: "GET",
-      credentials: "include",
-    })
+    try {
+      setRecommendedMangaLoading(true);
 
-    if(!response.ok) {
-      throw new Error("Failed to load resources");
+      // Fetch the recommendations for the given manga
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/manga/${manga.id}/recommended?includes[]=cover_art`, {
+        method: "GET",
+        credentials: "include",
+      })
+
+      if(!response.ok) {
+        throw new Error("Failed to load resources");
+      }
+
+      const data = await response.json();
+
+      // Take the ids of the top 5 manga
+      const recommendedMangaIds = data.data.splice(0, 5).map((mangaRecommendation: any) => {
+        return mangaRecommendation.relationships[1].id
+      })
+
+      // Add the default query parameters
+      const searchParams = new URLSearchParams([
+        ['includes[]', 'cover_art'],    
+        ["includes[]", "author"],
+        ["includes[]", "tag"],
+        ['limit', "5"]
+      ]);
+
+      // Add the ids of the recomended manga to the query parameters
+      recommendedMangaIds.forEach((mangaId: string) => {
+        searchParams.append("ids[]", mangaId);
+      });
+
+      // Fetch the recomended manga from MangaDex using their ids
+      const recomendedMangaResponse = await fetch(`https://api.mangadex.org/manga?${searchParams.toString()}`);
+
+      const recommendedMangaList = await recomendedMangaResponse.json();
+
+      // Convert the MangaDex manga to the client manga type
+      const clientMangaList = await getClientMangaFromMangaDexManga(recommendedMangaList.data);
+
+      console.log(clientMangaList);
+
+      setRecomendedManga(clientMangaList);
+    } catch(error) {
+      showError("Failed to load resources");
+    } finally {
+      setRecommendedMangaLoading(false);
     }
-
-    const data = await response.json();
-
-    console.log("recommended series", data);
-    // We only take the top 5 recomendations
-    setRecomendedManga(data.data.slice(0, 4))
-
-    setRecomendedMangaLoading(false);
   }
 
   return (
@@ -229,6 +265,32 @@ const MangaCard = ({ manga }: MangaCardProps) => {
                       </Typography>
                     </Box>
                   </Stack>
+                </Stack>
+                <Typography sx={{ alignSelf: "start", py: "3px", color: "var(--text-muted)"}}>If you liked this, you might like: </Typography>
+                <Stack direction="row" spacing={3}>
+                    { recommendedManga.map((manga) => {
+                      
+                      return (
+                        <Box key={manga.id} sx={{ backgroundColor: "var(--bg)", p: "5px", borderRadius: "5px" }}>
+                          <Box component="img" src={manga.coverImageUrl} sx={{
+                            height: "200px",
+                            width: "140px",
+                            objectFit: "cover",
+                          }}/>
+                          <Typography sx={{
+                            maxWidth: "140px", 
+                            fontSize: "0.9rem",
+                            display: "-webkit-box",
+                            // Limit number of lines to 2 
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden",
+                          }}>
+                            {manga.title}
+                          </Typography>
+                        </Box>
+                      )
+                    })}
                 </Stack>
               </>
             )
