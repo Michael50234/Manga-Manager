@@ -6,12 +6,12 @@ export type User = {
     nickname: string,
     createdAt: Date,
     lastUpdatedAt: Date,
-}
+};
 
 export type Tag = {
     id: string,
     name: string,
-}
+};
 
 export type Manga = {
   id: string,
@@ -27,7 +27,7 @@ export type Manga = {
   lastUpdatedAt: string,
 
   coverImageUrl: string,
-}
+};
 
 export type FavouriteMangaObject = {
     id: string;
@@ -35,29 +35,37 @@ export type FavouriteMangaObject = {
     title: string;
     lastUpdatedAt: Date;
     createdAt: Date;
-}
+};
 
+export type TierListRank = "GodTier" | "S" | "A" | "B" | "C" | "D" | "F" | "Dropped" | "Unranked";
+
+export type DaysOfWeek= "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday";
 
 export type UserMangaPreference = {
+    mangaAccessLink: string,
+    sendNotifications: boolean,
+    mangaReleaseDay: DaysOfWeek | "",
+    tierListRank: TierListRank
+};
+
+// Backend API Response Types
+export type ErrorResponse = {
+    detail: string,
+};
+
+export type UserMangaPreferenceResponse = {
     id: string,
     manga?: {
         mangaDexId: string;
     },
     mangaAccessLink: string | null,
-    sendNotifications: boolean | null,
-    mangaReleaseDay: "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday" | "Sunday" | null,
-    tierListRank: "GodTier" | "S" | "A" | "B" | "C" | "D" | "F" | "Dropped" | "Unranked"
-    lastUpdatedAt: Date;
-    createdAt: Date;
-    userId: string;
-    mangaId: string;
-}
-
-// Backend API Response Types
-export type ErrorResponse = {
-    detail: string,
-}
-
-
+    sendNotifications: boolean,
+    mangaReleaseDay: DaysOfWeek | null,
+    tierListRank: TierListRank,
+    lastUpdatedAt: Date,
+    createdAt: Date,
+    userId: string,
+    mangaId: string,
+};
 
 
