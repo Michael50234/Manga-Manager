@@ -41,7 +41,7 @@ export const getManhwaListSchema = z.object({
     }).optional()
 })
 
-export const editUserMangaPreferenceSchema =  z.object({
+export const editUserMangaPreferenceSchema = z.object({
     mangaAccessLink: z.string().optional(), 
     sendNotifications: z.boolean().optional(), 
     mangaReleaseDay: z.enum(["Monday", "Tuesday", "Wednesday", "Thursday",  "Friday", "Saturday", "Sunday"]).optional(),
@@ -49,9 +49,5 @@ export const editUserMangaPreferenceSchema =  z.object({
 })
 
 export const addFavouriteMangaSchema = z.object({
-    mangaId: z.uuid(),
-})
-
-export const getRecommendedMangaSchema = z.object({
     mangaId: z.uuid(),
 })

@@ -3,7 +3,7 @@ import { Prisma } from "generated/prisma/client";
 import { JWTMiddleware } from "~/middleware/authentication";
 import { prisma } from "~/prisma";
 import { getMangaDexMangaTitle } from "~/utils/mangaDex";
-import { addFavouriteMangaSchema, editUserMangaPreferenceSchema, getManhwaListSchema, getRecommendedMangaSchema } from "~/validators/manga";
+import { addFavouriteMangaSchema, editUserMangaPreferenceSchema, getManhwaListSchema } from "~/validators/manga";
 
 export const mangaRouter = express.Router();
 
@@ -356,7 +356,7 @@ mangaRouter.route("/:id/user-manga-preference")
             data.mangaReleaseDay = body.mangaReleaseDay; 
         }
 
-        if(body.sendNotifications) {
+        if(body.sendNotifications !== undefined) {
             data.sendNotifications = body.sendNotifications;
         }
 
@@ -401,17 +401,9 @@ mangaRouter.get("/user-manga-preferences", async (req, res) => {
 });
 
 // Returns a list of recomended manga based on a manga
-mangaRouter.get("/:id/recomended", async (req, res) => {
+mangaRouter.get("/:id/recommended", async (req, res) => {
     // Validate the request body
-    const parsed = getRecommendedMangaSchema.safeParse(req.body);
-
-    if(!parsed.success) {
-        res.status(400).json({
-            detail: `Response body not valid: ${parsed.error.message}`
-        });
-    }
-
-    const mangaId = req.body.mangaId;
+    const mangaId = req.params.id;
 
     // Fetch recommendations from MangaDex
     const response = await fetch(`https://api.mangadex.org/manga/${mangaId}/recommendation?order[score]=desc`);
