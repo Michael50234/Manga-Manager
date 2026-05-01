@@ -16,7 +16,7 @@ export const loginSchema = z.object({
 })
 
 export const updateUserSchema = z.object({
-    bio: z.string().min(1, "Bio must be at least one charecter long").optional(),
+    bio: z.string().optional(),
     email: z.string().refine((email) => {
         return email.includes("@")
     }, {

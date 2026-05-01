@@ -143,16 +143,16 @@ accountsRouter.post('/logout', JWTMiddleware, (req, res) => {
 // This route lets users change their nickname, bio, and email
 accountsRouter.patch("/update", JWTMiddleware, async (req, res) => {
     // Validate the request body using a zod schema
-    const validated = updateUserSchema.safeParse(req.body);
+    const parsed = updateUserSchema.safeParse(req.body);
     
-    if(!validated.success) {
+    if(!parsed.success) {
         res.status(400).json({
-            detail: `Failed to save changes`
+            detail: `Request body not valid: ${parsed.error.message}`
         });
         return;
     }
 
-    const requestBody = validated.data;
+    const requestBody = parsed.data;
 
     const user = req.user;
 
