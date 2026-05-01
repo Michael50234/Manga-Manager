@@ -1,6 +1,6 @@
 'use client'
 
-import { AppBar, Avatar, Box, Button, IconButton, Stack, Toolbar, Typography } from '@mui/material';
+import { AppBar, Avatar, Box, Button, IconButton, Menu, MenuItem, Stack, Toolbar, Typography } from '@mui/material';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation'
 import { useToast } from './ToastProvider';
@@ -15,6 +15,13 @@ export const Navbar = () => {
     const { setUser } = useUser();
 
     const [logoutLoading, setLogoutLoading] = useState(false)
+
+    const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+    const open = Boolean(anchorEl);
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    }
 
     const logout = async () => {
         try {
@@ -52,7 +59,11 @@ export const Navbar = () => {
                     width: "100%"
                 }}>
                     <Stack direction="row" spacing={1.5} alignItems="center">
-                        <IconButton>
+                        <IconButton
+                            onClick={(e) => {
+                                setAnchorEl(e.currentTarget)
+                            }}
+                        >
                             <Avatar>
                                 <Box component="img" src="/Frieren.png" sx={{
                                     transform: "translateY(30px) scale(0.3)"
@@ -165,6 +176,17 @@ export const Navbar = () => {
                         <Link href="/">Logout</Link>
                     </Button>
                 </Stack>
+                <Menu 
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleMenuClose}
+                >
+                    <MenuItem>
+                        <Button>
+                            Edit Profile
+                        </Button>
+                    </MenuItem>
+                </Menu>
             </Toolbar>
         </AppBar>
     )

@@ -369,10 +369,6 @@ const MangaCard = ({ manga, isFavourited, isFollowed, loadFollowedManga, loadFav
                     sx={{
                       fontSize: "2rem",
                       fontWeight: 600,
-                      position: "relative", 
-                      top: 0,
-                      left: 0,
-                      right: 0,
                       textAlign: "center",
                       px: "10px"
                     }}
@@ -493,16 +489,32 @@ const MangaCard = ({ manga, isFavourited, isFollowed, loadFollowedManga, loadFav
             </Box>
           ) : (
             <>
-              <Typography sx={{
-                fontWeight: 600,
-                textAlign: "center", 
-                fontSize: "2rem",
-              }}>
-                {manga.title}
-              </Typography>
+              <Box 
+                sx={{
+                  position: "relative",
+                  width: "100%",
+                }}
+              >
+                <Typography sx={{
+                  fontWeight: 600,
+                  textAlign: "center", 
+                  fontSize: "2rem",
+                }}>
+                  {manga.title}
+                </Typography>
+                <IconButton
+                  onClick={() => setPreferenceDialogOpen(false)}
+                  sx={{
+                    position: "absolute",
+                    top: 0,
+                    right: 0
+                  }}
+                >
+                  <Close />
+                </IconButton>
+              </Box>
               <Box sx={{ height: "350px", width: "250px", objectFit: "cover" }} component="img" src={manga.coverImageUrl}/>
               <Stack spacing={1}>
-
                 <FormControlLabel 
                   label="Send Notifications" 
                   control={
