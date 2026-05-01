@@ -102,6 +102,27 @@ export const Navbar = () => {
                             <Link href="/manga/favourites">Favourited Series</Link>
                         </Typography>
                         <Typography
+                            data-active={pathName === "/manga/followed" ? "" : undefined}
+                            sx={{
+                                transition: "background 0.1s ease-in-out",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                textAlign: "center",
+                                color: "black",
+                                fontWeight: "500",
+                                height: "100%",
+                                display: "flex",
+                                px: "2px",
+                                backgroundColor: pathName === "/manga/followed" ? "var(--primary)" : "transparent",
+                                boxShadow: pathName === "/manga/followed" ? "0 -3px 0 var(--primary-hover) inset" : undefined,
+                                "&:hover:not([data-active=''])" : {
+                                    boxShadow: "0 -3px 0 var(--primary-hover) inset"
+                                },
+                            }}
+                        >
+                            <Link href="/manga/followed">Followed Series</Link>
+                        </Typography>
+                        <Typography
                             data-active={pathName === "/manga/tier-list" ? "" : undefined}
                             sx={{
                                 transition: "background 0.1s ease-in-out",

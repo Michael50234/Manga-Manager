@@ -96,7 +96,6 @@ const MangaCard = ({ manga, isFavourited, isFollowed }: MangaCardProps) => {
         
         const data: UserMangaPreferenceResponse = await response.json();
 
-        console.log("Preference", data)
         // Set the userMangaPreferenceState
         setUserMangaPreference({
           mangaAccessLink: data.mangaAccessLink ?? "",
