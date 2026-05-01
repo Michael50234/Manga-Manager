@@ -32,8 +32,10 @@ mangaRouter.route("/favourites")
         // Return the list of all the user's favourite manga
         res.status(200).json(user.favouritedManga);
     })
-    // Adds a manga to the users favourite manga
+    // Add/Removes a manga to the users favourite manga
     .post(async (req, res) => {
+        const user = req.user!
+
         // Validate the request body
         const parsed = addFavouriteMangaSchema.safeParse(req.body);
 
@@ -82,7 +84,47 @@ mangaRouter.route("/favourites")
             });
         }
 
-        // Add the manga to the user's favourite manga
+        // Check if the manga is already favourited
+        const favouritedMangaList = (await prisma.user.findUnique({
+            where: {
+                id: user.id
+            },
+            select: {
+                favouritedManga: {
+                    select: {
+                        mangaDexId: true,
+                    }
+                },
+            }
+        }))?.favouritedManga;
+
+        // If the manga is already favourited, unfavourite it
+        if(favouritedMangaList) {
+            for(const favouritedManga of favouritedMangaList) {
+                if(mangaDexId === favouritedManga.mangaDexId) {
+                    await prisma.user.update({
+                        where: {
+                            id: user.id
+                        },
+                        data: {
+                            favouritedManga: {
+                                disconnect: [{
+                                    id: existingManga.id
+                                }]
+                            }
+                        }
+                    });
+
+                    res.status(200).json({
+                        detail: "Successfully unfavourited manga"
+                    });
+                    return; 
+                }
+            }
+
+        }
+
+        // If the manga is not favourited, favourite it
         await prisma.user.update({
             where: {
                 id: req.user!.id
@@ -94,11 +136,11 @@ mangaRouter.route("/favourites")
                     }]
                 }
             }
-        })
+        });
 
         res.status(200).json({
             detail: "Successfully added manga to user's favourites"
-        })
+        });
     });
 
 // Returns a paginated list of manga from MangaDex
@@ -400,7 +442,7 @@ mangaRouter.get("/user-manga-preferences", async (req, res) => {
     res.status(200).json(mangaPreferences);
 });
 
-// Returns a list of recomended manga based on a manga
+// Returns a list of manga recomendations based on a manga
 mangaRouter.get("/:id/recommended", async (req, res) => {
     // Validate the request body
     const mangaId = req.params.id;
@@ -410,10 +452,10 @@ mangaRouter.get("/:id/recommended", async (req, res) => {
     
     // Handle fetching errors
     if(!response.ok) {
-        console.error("Failed to fetch recommended manga from MangaDex");
+        console.error("Failed to fetch manga recommendations from MangaDex");
 
         res.status(404).json({
-            detail: "Failed to fetch recommended manga from MangaDex"
+            detail: "Failed to fetch manga recommendations from MangaDex"
         });
 
         return;

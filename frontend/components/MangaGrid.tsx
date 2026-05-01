@@ -1,7 +1,7 @@
 'use client';
 
 import { Box, Typography } from '@mui/material'
-import { FavouriteMangaObject, Manga, UserMangaPreference } from '../types'
+import { FavouriteMangaObject, Manga, UserMangaPreference, UserMangaPreferenceResponse } from '../types'
 import MangaCard from './MangaCard'
 import { useEffect, useState } from 'react';
 import { useToast } from './ToastProvider';
@@ -25,13 +25,8 @@ const MangaGrid = ({mangaList}: MangaGridProps) => {
                 await loadFavouriteManga(); 
                 await loadFollowedManga();
             } catch(error) {
-                if(error instanceof Error && error !== null && 'message' in error) {
-                    showError(error.message);
-                } else {
-                    showError("Failed to fetch resources");
-                }
+                showError("Failed to fetch resources");
             }
-
         }
 
         loadData();
@@ -48,12 +43,12 @@ const MangaGrid = ({mangaList}: MangaGridProps) => {
             throw new Error("Failed to fetch resources");
         }
 
-        const data: UserMangaPreference[] = await response.json();
+        const data: UserMangaPreferenceResponse[] = await response.json();
 
         // Create a set of the ids of manga that have preferences
         const followedMangaSet: Set<string> = new Set();
 
-        data.forEach((preference: UserMangaPreference) => {
+        data.forEach((preference: UserMangaPreferenceResponse) => {
             if(preference.manga) {
                 followedMangaSet.add(preference.manga.mangaDexId)
             }
@@ -102,7 +97,7 @@ const MangaGrid = ({mangaList}: MangaGridProps) => {
             height: "90%"
         }}>
             { mangaList.map((manga) => {
-                return <MangaCard isFavourited={favouriteMangaSet.has(manga.id)} isFollowed={followedMangaSet.has(manga.id)}key={manga.id} manga={manga}/>
+                return <MangaCard loadFollowedManga={loadFollowedManga} loadFavouriteManga={loadFavouriteManga} isFavourited={favouriteMangaSet.has(manga.id)} isFollowed={followedMangaSet.has(manga.id)}key={manga.id} manga={manga}/>
             })}
         </Box>
     )

@@ -2,7 +2,7 @@
 
 import { DaysOfWeek, Manga, TierListRank, UserMangaPreference, UserMangaPreferenceResponse } from '@/types'
 import { getClientMangaFromMangaDexManga } from '@/utils/mangaDex';
-import { Close, StarBorder } from '@mui/icons-material'
+import { Close, Star, StarBorder } from '@mui/icons-material'
 import { Box, Button, Chip, CircularProgress, Dialog, DialogTitle, FormControl, FormControlLabel, FormLabel, Icon, IconButton, InputLabel, MenuItem, Select, Stack, Switch, TextField, Typography } from '@mui/material'
 import React, { useEffect, useState } from 'react'
 import { useToast } from './ToastProvider';
@@ -11,9 +11,11 @@ type MangaCardProps = {
   manga: Manga,
   isFavourited: boolean,
   isFollowed: boolean,
+  loadFollowedManga: () => Promise<void>,
+  loadFavouriteManga: () => Promise<void>,
 }
 
-const MangaCard = ({ manga, isFavourited, isFollowed }: MangaCardProps) => {
+const MangaCard = ({ manga, isFavourited, isFollowed, loadFollowedManga, loadFavouriteManga }: MangaCardProps) => {
   const { showError, showSuccess } = useToast();
 
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
@@ -172,17 +174,81 @@ const MangaCard = ({ manga, isFavourited, isFollowed }: MangaCardProps) => {
         px: "10px",
       }}>
         {/* Action Bar */}
-        <Stack direction="row" sx={{
-          alignSelf: "start",
-          alignItems: "center"
-        }}>
-          <StarBorder sx={{
-            borderRadius: "50%",
-            transform: "backgroundColor 0.3s ease-in-out",
-            "&:hover": {
-              backgroundColor: "rgba(0, 0, 0, 0.04)"
-            }
-          }}/>
+        <Stack direction="row" 
+          sx={{
+            alignSelf: "start",
+            alignItems: "center"
+          }}
+        >
+          { isFavourited ? (
+            <IconButton 
+              sx={{
+                p: "2px",
+                color: "#8be32d"
+              }}
+              onClick={async () => {
+                try {
+                  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/manga/favourites`, {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                      "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                      mangaId: manga.id
+                    }),
+                  });
+
+                  if(!response.ok) {
+                    throw new Error("Failed to perform action");
+                  }
+
+                  await loadFavouriteManga();
+                } catch {
+                  showError("Failed to perform action");
+                }
+              }}
+            >
+              <Star />
+            </IconButton>
+            
+          ) : (
+            <IconButton
+              onClick={async () => {
+                try {
+                  const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/manga/favourites`, {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                      "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                      mangaId: manga.id
+                    }),
+                  });
+
+                  if(!response.ok) {
+                    throw new Error("Failed to perform action");
+                  }
+
+                  await loadFavouriteManga();
+                } catch {
+                  showError("Failed to perform action");
+                }
+              }}
+              sx={{
+                p: "2px",
+              }}  
+            >
+              <StarBorder sx={{
+                borderRadius: "50%",
+                transform: "backgroundColor 0.3s ease-in-out",
+                "&:hover": {
+                  backgroundColor: "rgba(0, 0, 0, 0.04)"
+                }
+              }}/>
+            </IconButton>
+          )}
           <Button 
             variant="text" 
             color="primary" 
@@ -496,6 +562,9 @@ const MangaCard = ({ manga, isFavourited, isFollowed }: MangaCardProps) => {
                       if(!response.ok) {
                         throw new Error("Failed to save manga preference");
                       }
+                      
+                      // Reload the followedMangaSet to prevent it from going stale
+                      await loadFollowedManga();
 
                       showSuccess("Successfully saved manga preference");
 
