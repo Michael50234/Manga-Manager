@@ -1,11 +1,11 @@
 // Resource Types
 export type User = {
     id: string,
-    bio: string
+    bio: string | null,
     email: string,
     nickname: string,
-    createdAt: Date,
-    lastUpdatedAt: Date,
+    createdAt: string,
+    lastUpdatedAt: string,
 };
 
 export type Tag = {

@@ -1,10 +1,10 @@
 'use client'
 
-import { AppBar, Avatar, Box, Button, IconButton, Menu, MenuItem, Stack, Toolbar, Typography } from '@mui/material';
+import { AppBar, Avatar, Box, Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, Menu, MenuItem, Stack, TextField, Toolbar, Typography } from '@mui/material';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation'
 import { useToast } from './ToastProvider';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useUser } from './UserProvider';
 
 export const Navbar = () => {
@@ -12,16 +12,72 @@ export const Navbar = () => {
     const router = useRouter();
 
     const { showSuccess, showError } = useToast();
-    const { setUser } = useUser();
+    const { setUser, user, loadUser } = useUser();
 
-    const [logoutLoading, setLogoutLoading] = useState(false)
+    const [logoutLoading, setLogoutLoading] = useState(false);
+    const [saveUserLoading, setSaveUserLoading] = useState(false);
 
     const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
     const open = Boolean(anchorEl);
 
+    const [dialogOpen, setDialogOpen] = useState(false);
+
+    const [email, setEmail] = useState("");
+    const [nickname, setNickname] = useState("")
+    const [bio, setBio] = useState("")
+
+    useEffect(() => {
+        if(user) {
+            setEmail(user.email);
+            setNickname(user.nickname);
+            if(user.bio) {
+                setBio(user.bio);
+            }
+            
+        }
+    // Added dialogOpen to dependencies so that changes would reset if they are not saved
+    }, [user, dialogOpen])
+
+    const save = async () => {
+        try {
+            setSaveUserLoading(true);
+
+            // Save the changes to the user to the database
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/accounts/update`, {
+                method: "PATCH",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email,
+                    nickname,
+                    bio,
+                })
+            });
+
+            if(!response.ok) {
+               throw new Error("Failed to save changes");
+            }
+
+            // Reload the global user state to prevent it from going stale
+            await loadUser();
+
+            showSuccess("Successfully saved changes");
+        } catch {
+            showError("Failed to save changes")
+        } finally {
+            setSaveUserLoading(false);
+        }
+    }
+
     const handleMenuClose = () => {
         setAnchorEl(null);
-    }
+    };
+
+    const handleDialogClose = () => {
+        setDialogOpen(false);
+    };
 
     const logout = async () => {
         try {
@@ -47,7 +103,7 @@ export const Navbar = () => {
         } finally {
             setLogoutLoading(false);
         }
-    }
+    };
 
     return (
         <AppBar position="fixed">
@@ -67,7 +123,7 @@ export const Navbar = () => {
                             <Avatar>
                                 <Box component="img" src="/Frieren.png" sx={{
                                     transform: "translateY(30px) scale(0.3)"
-                                }}></Box>
+                                }} />
                             </Avatar>
                         </IconButton>
                         <Typography 
@@ -180,13 +236,97 @@ export const Navbar = () => {
                     anchorEl={anchorEl}
                     open={open}
                     onClose={handleMenuClose}
+                    onClick={() => {
+                        setAnchorEl(null);
+                        setDialogOpen(true)
+                    }}
                 >
                     <MenuItem>
-                        <Button>
-                            Edit Profile
-                        </Button>
+                        Edit Profile
                     </MenuItem>
                 </Menu>
+                <Dialog
+                    open={dialogOpen}
+                    onClose={handleDialogClose}
+                    maxWidth="sm"
+                    fullWidth
+                    slotProps={{
+                        paper: {
+                            sx: {
+                                p: "8px"
+                            }
+                        }
+                    }}
+                >
+                    <DialogTitle
+                        sx={{
+                            fontSize: "2rem"
+
+                        }}
+                    >
+                        Profile
+                        <Stack>
+                            <Typography 
+                                sx={{
+                                    fontSize: "0.8rem",
+                                    color: "var(--text-muted)"
+                                }}
+                            >
+                                Created At {user ? new Date(user?.createdAt).toLocaleDateString() : "n/a"}
+                            </Typography>
+                            <Typography 
+                                sx={{
+                                    fontSize: "0.8rem",
+                                    color: "var(--text-muted)"
+                                }}
+                            >
+                                Last Updated At {user ? new Date(user?.lastUpdatedAt).toLocaleDateString() : "n/a"}
+                            </Typography>
+                        </Stack>
+                    </DialogTitle>
+                    <DialogContent sx={{ py: "2px"}}>
+                        <Stack 
+                            sx={{ pt: "10px"}}
+                            spacing={1.5}
+                        >
+                            <TextField 
+                            
+                                label="Email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                            <TextField 
+                                label="Nickname" 
+                                value={nickname}
+                                onChange={(e) =>  setNickname(e.target.value)}
+                            />
+                            <TextField 
+                                value={bio} 
+                                onChange={(e) => setBio(e.target.value)}
+                                label="Bio"
+                                multiline
+                                minRows={5}
+                                maxRows={5}
+                            />
+                        </Stack>
+                    </DialogContent>
+                    <DialogActions sx={{ width: "100%", display: "flex", justifyContent: "center", alignContent: "center"}}>
+                        <Button 
+                            variant="contained" 
+                            color="primary"
+                            sx={{
+                                px: "30px"
+                            }}
+                            onClick={save}
+                        >
+                            {saveUserLoading ? (
+                                <CircularProgress />
+                            ) : (
+                                "Save"
+                            )}
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </Toolbar>
         </AppBar>
     )
