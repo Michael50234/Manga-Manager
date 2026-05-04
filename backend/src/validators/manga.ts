@@ -51,3 +51,41 @@ export const editUserMangaPreferenceSchema = z.object({
 export const addFavouriteMangaSchema = z.object({
     mangaId: z.uuid(),
 })
+
+export const getUserMangaPreferencesSchema = z.object({
+    limit: z.string().transform((limit) => Number(limit)).refine((limit) => {
+        return limit >= 10;
+    }, {
+        message: "The number of items per page must be at least 10"
+    }).refine((limit) => {
+        return limit <= 100;
+    }, {
+        message: "The number of items per page must be smaller than 100"
+    })
+    .optional(),
+    page: z.string().transform((page) => Number(page) - 1).refine((page) => {
+        return page > 0;
+    }, {
+        message: "The page must be greater than 0"
+    })
+    .optional()
+})
+
+export const getFavouriteMangaSchema = z.object({
+    limit: z.string().transform((limit) => Number(limit)).refine((limit) => {
+        return limit >= 10;
+    }, {
+        message: "The number of items per page must be at least 10"
+    }).refine((limit) => {
+        return limit <= 100;
+    }, {
+        message: "The number of items per page must be smaller than 100"
+    })
+    .optional(),
+    page: z.string().transform((page) => Number(page) - 1).refine((page) => {
+        return page > 0;
+    }, {
+        message: "The page must be greater than 0"
+    })
+    .optional()
+})

@@ -3,7 +3,7 @@ import { Prisma } from "generated/prisma/client";
 import { JWTMiddleware } from "~/middleware/authentication";
 import { prisma } from "~/prisma";
 import { getMangaDexMangaTitle } from "~/utils/mangaDex";
-import { addFavouriteMangaSchema, editUserMangaPreferenceSchema, getManhwaListSchema } from "~/validators/manga";
+import { addFavouriteMangaSchema, editUserMangaPreferenceSchema, getFavouriteMangaSchema, getManhwaListSchema, getUserMangaPreferencesSchema } from "~/validators/manga";
 
 export const mangaRouter = express.Router();
 
@@ -11,7 +11,66 @@ mangaRouter.use(JWTMiddleware);
 
 mangaRouter.route("/favourites")
     // Returns a list of all the user's favourited manga
+    // If the user includes a limit and page query parameter the response will be paginated
+    // Otherwise, it won't be paginated
     .get(async (req, res) => {
+        const parsed = getFavouriteMangaSchema.safeParse(req.query);
+
+        if(!parsed.success) {
+            res.json({
+                detail: `Response body is not valid: ${parsed.error.message}`
+            });
+            return;
+        }
+
+        const queryParams = parsed.data;
+        const page = queryParams.page;
+        const limit = queryParams.limit;
+
+        const count = (await prisma.user.findUnique({
+            where: { id: req.user!.id },
+            select: {
+                _count: {
+                    select: {
+                        favouritedManga: true
+                    }
+                }
+            }
+        }))?._count.favouritedManga;
+
+        if(page && limit) {
+            const skip = page * limit;
+
+            const user = await prisma.user.findUnique({
+                where: {
+                    id: req.user!.id
+                },
+                include: {
+                    favouritedManga: {
+                        take: limit,
+                        skip,
+                        orderBy: {
+                            lastUpdatedAt: 'asc'
+                        }
+                    }
+                }
+            });
+
+            if(!user) {
+                res.status(404).json({
+                    detail: "User not found"
+                });
+                return;
+            }
+
+            res.json({
+                data: {
+                    data: user.favouritedManga,
+                    count,
+                }
+            })
+        }
+
         // Query for the user and their favourited manga
         const user = await prisma.user.findUnique({
             where: {
@@ -30,7 +89,10 @@ mangaRouter.route("/favourites")
         }
 
         // Return the list of all the user's favourite manga
-        res.status(200).json(user.favouritedManga);
+        res.status(200).json({
+            data: user.favouritedManga,
+            count,
+        });
     })
     // Add/Removes a manga to the users favourite manga
     .post(async (req, res) => {
@@ -202,7 +264,7 @@ mangaRouter.get("/", async (req, res) => {
 
     const paginatedManga = await response.json();
 
-    res.status(200).json(paginatedManga)
+    res.status(200).json(paginatedManga);
 });
 
 // Returns a list of all MangaDex tags
@@ -422,24 +484,72 @@ mangaRouter.route("/:id/user-manga-preference")
     });
 
 // Returns a list of all the users manga preference settings
+// If the client passes page and limit query parameters, then the response will be paginated
+// Otherwise it will not be paginated
 mangaRouter.get("/user-manga-preferences", async (req, res) => {
     const user = req.user!;
 
-    // Find all manga preferences belonging to the user
-    const mangaPreferences = await prisma.userMangaPreference.findMany({
-        where: {
-            userId: user.id,
-        },
-        include: {
-            manga: {
-                select: {
-                    mangaDexId: true
+    const parsed = getUserMangaPreferencesSchema.safeParse(req.query);
+
+    if(!parsed.success) {
+        res.status(400).json({
+            detail: `Request body is not valid ${parsed.error.message}`
+        });
+        return;
+    }
+
+    const queryParams = parsed.data;
+    const page = queryParams.page;
+    const limit = queryParams.limit;
+
+    const count = await prisma.userMangaPreference.count();
+
+    // If there is a limit and page query param then return a paginated response, otherwise return an unpaginated response
+    if(limit && page) {
+        const skip = page * limit;
+
+        const mangaPreferences = await prisma.userMangaPreference.findMany({
+            take: limit,
+            skip,
+            orderBy: { lastUpdatedAt: 'asc' },
+            where: {
+                userId: user.id,
+            },
+            include: {
+                manga: {
+                    select: {
+                        mangaDexId: true
+                    }
                 }
             }
-        }
-    });
+        })
 
-    res.status(200).json(mangaPreferences);
+        res.status(200).json({
+            data: mangaPreferences,
+            count,
+        });
+        return;
+    } else {
+        // Find all manga preferences belonging to the user
+        const mangaPreferences = await prisma.userMangaPreference.findMany({
+            where: {
+                userId: user.id,
+            },
+            include: {
+                manga: {
+                    select: {
+                        mangaDexId: true
+                    }
+                }
+            }
+        });
+
+        res.status(200).json({
+            data: mangaPreferences,
+            count,
+        });
+        return;
+    }
 });
 
 // Returns a list of manga recomendations based on a manga
