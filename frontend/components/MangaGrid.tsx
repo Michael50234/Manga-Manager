@@ -43,12 +43,11 @@ const MangaGrid = ({mangaList}: MangaGridProps) => {
             throw new Error("Failed to fetch resources");
         }
 
-        const data: UserMangaPreferenceResponse[] = await response.json();
+        const data: UserMangaPreferenceResponse = await response.json();
 
         // Create a set of the ids of manga that have preferences
         const followedMangaSet: Set<string> = new Set();
-
-        data.forEach((preference: UserMangaPreferenceResponse) => {
+        data.data.forEach((preference: UserMangaPreferenceResponse['data'][number]) => {
             if(preference.manga) {
                 followedMangaSet.add(preference.manga.mangaDexId)
             }
@@ -69,11 +68,11 @@ const MangaGrid = ({mangaList}: MangaGridProps) => {
             throw new Error("Failed to fetch resources");
         }
 
-        const data: FavouriteMangaObject[] = await response.json();
+        const data: { data: FavouriteMangaObject[], count: number} = await response.json();
 
         const favouriteMangaSet: Set<string> = new Set();
 
-        data.forEach((favouriteManga) => {
+        data.data.forEach((favouriteManga) => {
             favouriteMangaSet.add(favouriteManga.mangaDexId)
         })
 

@@ -11,7 +11,7 @@ import MangaGrid from '@/components/MangaGrid';
 import SearchBar from '@/components/SearchBar';
 import PaginationControls from '@/components/PaginationControls';
 
-const page = () => {
+const Dashboard = () => {
     const { user } = useUser();
     const { showError, showSuccess } = useToast();
 
@@ -252,4 +252,4 @@ const page = () => {
     )
 }
 
-export default page
+export default Dashboard

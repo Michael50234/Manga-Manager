@@ -54,18 +54,21 @@ export type ErrorResponse = {
 };
 
 export type UserMangaPreferenceResponse = {
-    id: string,
-    manga?: {
-        mangaDexId: string;
-    },
-    mangaAccessLink: string | null,
-    sendNotifications: boolean,
-    mangaReleaseDay: DaysOfWeek | null,
-    tierListRank: TierListRank,
-    lastUpdatedAt: Date,
-    createdAt: Date,
-    userId: string,
-    mangaId: string,
+    data: {
+        id: string,
+        manga?: {
+            mangaDexId: string;
+        },
+        mangaAccessLink: string | null,
+        sendNotifications: boolean,
+        mangaReleaseDay: DaysOfWeek | null,
+        tierListRank: TierListRank,
+        lastUpdatedAt: Date,
+        createdAt: Date,
+        userId: string,
+        mangaId: string,
+    }[],
+    count: number
 };
 
 
