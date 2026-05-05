@@ -63,12 +63,10 @@ mangaRouter.route("/favourites")
                 return;
             }
 
-            res.json({
-                data: {
-                    data: user.favouritedManga,
-                    count,
-                }
-            })
+            res.status(200).json({
+                data: user.favouritedManga,
+                count,
+            });
         }
 
         // Query for the user and their favourited manga

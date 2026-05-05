@@ -64,7 +64,7 @@ export const getUserMangaPreferencesSchema = z.object({
     })
     .optional(),
     page: z.string().transform((page) => Number(page) - 1).refine((page) => {
-        return page > 0;
+        return page >= 0;
     }, {
         message: "The page must be greater than 0"
     })
@@ -83,7 +83,7 @@ export const getFavouriteMangaSchema = z.object({
     })
     .optional(),
     page: z.string().transform((page) => Number(page) - 1).refine((page) => {
-        return page > 0;
+        return page >= 0;
     }, {
         message: "The page must be greater than 0"
     })
