@@ -53,7 +53,7 @@ export type ErrorResponse = {
     detail: string,
 };
 
-export type UserMangaPreferenceResponse = {
+export type GetUserMangaPreferencesResponse = {
     data: {
         id: string,
         manga?: {

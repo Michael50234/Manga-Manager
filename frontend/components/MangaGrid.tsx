@@ -1,7 +1,7 @@
 'use client';
 
 import { Box, Typography } from '@mui/material'
-import { FavouriteMangaObject, Manga, UserMangaPreference, UserMangaPreferenceResponse } from '../types'
+import { FavouriteMangaObject, Manga, UserMangaPreference, GetUserMangaPreferencesResponse } from '../types'
 import MangaCard from './MangaCard'
 import { useEffect, useState } from 'react';
 import { useToast } from './ToastProvider';
@@ -43,11 +43,11 @@ const MangaGrid = ({mangaList}: MangaGridProps) => {
             throw new Error("Failed to fetch resources");
         }
 
-        const data: UserMangaPreferenceResponse = await response.json();
+        const data: GetUserMangaPreferencesResponse = await response.json();
 
         // Create a set of the ids of manga that have preferences
         const followedMangaSet: Set<string> = new Set();
-        data.data.forEach((preference: UserMangaPreferenceResponse['data'][number]) => {
+        data.data.forEach((preference: GetUserMangaPreferencesResponse['data'][number]) => {
             if(preference.manga) {
                 followedMangaSet.add(preference.manga.mangaDexId)
             }
@@ -68,7 +68,7 @@ const MangaGrid = ({mangaList}: MangaGridProps) => {
             throw new Error("Failed to fetch resources");
         }
 
-        const data: { data: FavouriteMangaObject[], count: number} = await response.json();
+        const data: { data: FavouriteMangaObject[], count: number } = await response.json();
 
         const favouriteMangaSet: Set<string> = new Set();
 
