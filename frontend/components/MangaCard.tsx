@@ -1,6 +1,6 @@
 'use client';
 
-import { DaysOfWeek, Manga, TierListRank, UserMangaPreference, UserMangaPreferenceResponse } from '@/types'
+import { DaysOfWeek, Manga, TierListRank, UserMangaPreference, GetUserMangaPreferenceResponse } from '@/types'
 import { getClientMangaFromMangaDexManga } from '@/utils/mangaDex';
 import { Close, Star, StarBorder } from '@mui/icons-material'
 import { Box, Button, Chip, CircularProgress, Dialog, DialogTitle, FormControl, FormControlLabel, FormLabel, Icon, IconButton, InputLabel, MenuItem, Select, Stack, Switch, TextField, Typography } from '@mui/material'
@@ -96,7 +96,7 @@ const MangaCard = ({ manga, isFavourited, isFollowed, loadFollowedManga, loadFav
           credentials: "include"
         });
         
-        const data: UserMangaPreferenceResponse = await response.json();
+        const data: GetUserMangaPreferenceResponse = await response.json();
 
         // Set the userMangaPreferenceState
         setUserMangaPreference({

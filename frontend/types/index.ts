@@ -48,10 +48,33 @@ export type UserMangaPreference = {
     tierListRank: TierListRank
 };
 
+export type Item = {
+  id: string,
+  name: string
+}
+
+export type Tier = {
+  id: string,
+  name: string,
+  items: Item[],
+}
+
 // Backend API Response Types
 export type ErrorResponse = {
     detail: string,
 };
+
+export type GetUserMangaPreferenceResponse = {
+    id: string,
+    lastUpdatedAt: string,
+    createdAt: string,
+    mangaAccessLink: string | null,
+    sendNotifications: boolean,
+    mangaReleaseDay: DaysOfWeek | null,
+    tierListRank: TierListRank,
+    userId: string,
+    mangaId: string,
+}
 
 export type GetUserMangaPreferencesResponse = {
     data: {
@@ -70,5 +93,3 @@ export type GetUserMangaPreferencesResponse = {
     }[],
     count: number
 };
-
-

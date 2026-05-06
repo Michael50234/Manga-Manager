@@ -9,7 +9,7 @@ import { getClientMangaFromMangaDexManga } from '@/utils/mangaDex';
 import { Box, Stack, Toolbar, Typography } from '@mui/material'
 import React, { useEffect, useMemo, useState } from 'react'
 
-const FavouritesPage = () => {
+const FavouriteMangaPage = () => {
   const { showError } = useToast();
 
   const [mangaLoading, setMangaLoading] = useState(true);
@@ -115,4 +115,4 @@ const FavouritesPage = () => {
   )
 }
 
-export default FavouritesPage
+export default FavouriteMangaPage;

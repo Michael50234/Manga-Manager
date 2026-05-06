@@ -68,7 +68,9 @@ export const getUserMangaPreferencesSchema = z.object({
     }, {
         message: "The page must be greater than 0"
     })
-    .optional()
+    .optional(),
+    mangaReleaseDay: z.enum(["Monday", "Tuesday", "Wednesday", "Thursday",  "Friday", "Saturday", "Sunday"]).optional(),
+    tierListRank: z.enum(["GodTier", "S", "A", "B", "C" , "D", "F" , "Dropped", "Unranked"]).optional()
 })
 
 export const getFavouriteMangaSchema = z.object({

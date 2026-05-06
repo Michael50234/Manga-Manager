@@ -499,8 +499,22 @@ mangaRouter.get("/user-manga-preferences", async (req, res) => {
     const queryParams = parsed.data;
     const page = queryParams.page;
     const limit = queryParams.limit;
+    const mangaReleaseDay = queryParams.mangaReleaseDay;
+    const tierListRank = queryParams.tierListRank;
 
-    const count = await prisma.userMangaPreference.count();
+    const where: Prisma.UserMangaPreferenceFindManyArgs['where'] = {}
+
+    if(mangaReleaseDay) {
+        where.mangaReleaseDay = mangaReleaseDay;
+    }
+
+    if(tierListRank) {
+        where.tierListRank = tierListRank;
+    }
+
+    const count = await prisma.userMangaPreference.count({
+        where,
+    });
 
     // If there is a limit and page query param then return a paginated response, otherwise return an unpaginated response
     if(limit && page) {
@@ -512,6 +526,7 @@ mangaRouter.get("/user-manga-preferences", async (req, res) => {
             orderBy: { lastUpdatedAt: 'asc' },
             where: {
                 userId: user.id,
+                ...where,
             },
             include: {
                 manga: {
@@ -532,6 +547,7 @@ mangaRouter.get("/user-manga-preferences", async (req, res) => {
         const mangaPreferences = await prisma.userMangaPreference.findMany({
             where: {
                 userId: user.id,
+                ...where, 
             },
             include: {
                 manga: {
