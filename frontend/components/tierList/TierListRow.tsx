@@ -1,6 +1,6 @@
 import { Item } from '@/types'
 import { useDroppable } from '@dnd-kit/core'
-import { SortableContext } from '@dnd-kit/sortable'
+import { rectSortingStrategy, SortableContext } from '@dnd-kit/sortable'
 import { Box, Typography } from '@mui/material'
 import React from 'react'
 import SortableItem from './SortableItem'
@@ -44,12 +44,15 @@ const TierListRow = ({ id, name, items }: TierListRowProps) => {
           alignSelf: "stretch",
           width: "1000px",
           border: "solid 1px black",
-          backgroundColor: "hsl(270, 30%, 88%)"
+          backgroundColor: isOver ? "hsl(270, 30%, 92%)" : "hsl(270, 30%, 88%)",
+          display: "flex",
+          alignItems: "center",
+          flexWrap: "wrap"
         }}
       >
-        <SortableContext items={items.map((item) => item.id)}>
+        <SortableContext items={items.map((item) => item.id)} strategy={rectSortingStrategy}>
           {items.map((item) => {
-            return <SortableItem key={item.id} id={item.id} name={item.name}/>
+            return <SortableItem key={item.id} id={item.id} name={item.name} coverImgUrl={item.coverImgUrl}/>
           })}
         </SortableContext>
       </Box>

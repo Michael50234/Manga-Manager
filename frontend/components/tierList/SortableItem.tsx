@@ -8,10 +8,11 @@ import { Box, Typography } from '@mui/material';
 type ListItemProps = {
   id: string,
   name: string
+  coverImgUrl: string
 }
 
-const SortableItem = ({ id, name }: ListItemProps) => {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({id})
+const SortableItem = ({ id, name, coverImgUrl }: ListItemProps) => {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({id})
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -23,13 +24,15 @@ const SortableItem = ({ id, name }: ListItemProps) => {
       ref={setNodeRef}
       style={{
         ...style,
-        height: "40px",
-        width: "50px"
+        height: "100px",
+        width: "70px",
+        padding: "5px",
+        opacity: isDragging ? 0 : 1
       }}
       {...attributes}
       {...listeners}
     >
-      <Typography>{name}</Typography>
+      <Box component="img" src={coverImgUrl} sx={{height: "100%", width: "100%", objectFit: "cover"}}/>
     </Box>
   )
 }

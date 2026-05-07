@@ -50,7 +50,8 @@ export type UserMangaPreference = {
 
 export type Item = {
   id: string,
-  name: string
+  name: string,
+  coverImgUrl: string
 }
 
 export type Tier = {
