@@ -5,3 +5,8 @@ export type JWTPayload = {
     // Expiry time  
     exp?: string, 
 }
+
+export type ReleasingSeries = {
+    title: string,
+    mangaAccessLink: string | null,
+}
