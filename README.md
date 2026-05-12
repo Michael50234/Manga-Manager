@@ -16,6 +16,6 @@ Manga Manager is a full-stack web application centered around CRUD operations fo
 - **Technologies Used:** Typescript, Express, NodeJS, Zod, Redis, BullMQ
 - **Description:** The backend hanldes data persistence, serves data from the database to the frontend, and enforces authentication and authorization. Authentication is implemented using JWT cookies, verifying user identity and securing API requests, and authorization logic is handled using custom middleware, allowing control to resources based on ownership. Redis and BullMQ are used to manage background jobs that send daily email notifications about followed manga releases.
 
-## Database
+### Database
 - **Technologies Used:** Typescript, Prisma, Postgres
 - **Description:** The database allows for the persistence of user manga preferences, user information, and manga data. It also defines relationships between different models/tables, such as manga preference ownership, allowing for efficent data retrival and connecting related data.
