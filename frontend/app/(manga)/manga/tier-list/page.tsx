@@ -337,7 +337,8 @@ const TierListPage = () => {
     <Box
       sx={{
         minHeight: "100vh",
-        width: "100vw",
+        width: "98vw",
+        p: "20px",
         backgroundColor: "var(--bg-dark)",
       }}
     >

@@ -39,7 +39,7 @@ export default function Home() {
   };
 
   const validateEmail = () => {
-    const emailRegex = /@.+\.com/;
+    const emailRegex = /@.+\.(com|ca)/;
 
     if (!emailRegex.test(email)) {
       setEmailError("Please enter a valid email");

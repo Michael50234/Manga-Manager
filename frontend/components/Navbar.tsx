@@ -68,6 +68,7 @@ export const Navbar = () => {
             showError("Failed to save changes")
         } finally {
             setSaveUserLoading(false);
+            setDialogOpen(false);
         }
     }
 

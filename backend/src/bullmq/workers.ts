@@ -1,6 +1,7 @@
 import { Worker } from "bullmq";
 import nodemailer from "nodemailer";
 
+import "~/../config/env";
 import { prisma } from "~/prisma";
 import { sendNotificationQueue } from "./queues";
 import { ReleasingSeries } from "~/types";

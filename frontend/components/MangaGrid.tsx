@@ -88,9 +88,10 @@ const MangaGrid = ({mangaList}: MangaGridProps) => {
                 sm: "1fr 1fr",
                 md: "1fr 1fr 1fr",
                 lg: "1fr 1fr 1fr 1fr",
-                xl: "1fr 1fr 1fr 1fr 1fr",
+                xl: "1fr 1fr 1fr 1fr",
             },
             gridAutoRows: "200px",
+            overflowX: "hidden",
             width: "90%",
             gap: 2,
             height: "90%"

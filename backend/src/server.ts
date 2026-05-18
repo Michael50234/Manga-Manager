@@ -18,12 +18,6 @@ app.use(cors({
     credentials: true
 }));
 
-app.get("/", (req, res) => {
-    res.json({
-        detail: "Hello, is this working"
-    });
-})
-
 app.use("/accounts", accountsRouter);
 
 app.use("/manga", mangaRouter);
@@ -31,7 +25,7 @@ app.use("/manga", mangaRouter);
 const startServer = async () => {
     await registerCronJobs();
 
-    app.listen(Number(process.env.port), () => {
+    app.listen(Number(process.env.PORT), () => {
         console.log("Server started");
     });
 };

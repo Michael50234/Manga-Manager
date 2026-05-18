@@ -584,6 +584,7 @@ const MangaCard = ({ manga, isFavourited, isFollowed, loadFollowedManga, loadFav
                       showError("Failed to save manga preference");
                     } finally {
                       setUserMangaPreferenceSaveLoading(false);
+                      setPreferenceDialogOpen(false);
                     }
                   }}
                 >
