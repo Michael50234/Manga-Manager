@@ -255,7 +255,7 @@ mangaRouter.get("/", async (req, res) => {
         console.error("Failed to fetch manga from MangaDex")
 
         res.status(404).json({
-            detatil: "Failed to fetch manga from MangaDex"
+            detail: "Failed to fetch manga from MangaDex"
         })
         return;
     }
